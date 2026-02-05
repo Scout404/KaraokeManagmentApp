@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "D6dII1mv93o9eY1q8lwNwambMehrhUtmjw8y3jY9EfA=",
+  "Source": "KaraokeManagment.API",
+  "BasePath": "_content/KaraokeManagment.API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
