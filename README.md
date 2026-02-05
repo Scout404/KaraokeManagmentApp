@@ -1,0 +1,2 @@
+# KaraokeManagmentApp
+manage a karaoke
