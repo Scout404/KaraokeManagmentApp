@@ -1,32 +1,17 @@
-import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
 import './App.css';
-import SingersList from './components/SingersList';
-import SingerRegistrationForm from './components/SingerRegistrationForm';
 
 function App() {
-  const [refreshKey, setRefreshKey] = useState(0);
-
-  const handleRegistered = () => {
-    // Force refresh of the singers list
-    setRefreshKey((prev) => prev + 1);
-  };
-
   return (
-    <div className="App">
-      <header style={{
-        backgroundColor: '#282c34',
-        padding: '20px',
-        color: 'white',
-      }}>
-        <h1>🎤 Karaoke Management System</h1>
-      </header>
-      
-      <main style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-        <SingerRegistrationForm onRegistered={handleRegistered} />
-        <hr style={{ margin: '30px 0' }} />
-        <SingersList key={refreshKey} />
-      </main>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </Router>
   );
 }
 
