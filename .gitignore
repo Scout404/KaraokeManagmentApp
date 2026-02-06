@@ -1,0 +1,25 @@
+# .NET Backend
+backend/**/bin/
+backend/**/obj/
+backend/**/*.user
+backend/**/.vs/
+backend/**/*.suo
+
+# Database (for later)
+**/*.db
+**/*.db-shm
+**/*.db-wal
+
+# Environment variables
+.env
+backend/**/*.env
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS Files
+.DS_Store
+Thumbs.db
