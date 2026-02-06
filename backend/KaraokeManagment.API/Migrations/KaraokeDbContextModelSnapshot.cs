@@ -139,7 +139,7 @@ namespace KaraokeManagment.API.Migrations
                         {
                             Id = 1,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            PasswordHash = "admin123",
+                            PasswordHash = "$2a$11$LtABhcCQGHyVHs9cblE/DeliCQ1t/6E5Amr6UzKwve.qwjRAd8LHq",
                             Role = 1,
                             Username = "admin"
                         },
@@ -147,7 +147,7 @@ namespace KaraokeManagment.API.Migrations
                         {
                             Id = 2,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            PasswordHash = "worker123",
+                            PasswordHash = "$2a$11$t2TuMM7YTUpAf3ZxQSSg6O3fZ/beR9mDuiPAuU4l9hBE2xu1aw4Nq",
                             Role = 2,
                             Username = "worker"
                         });

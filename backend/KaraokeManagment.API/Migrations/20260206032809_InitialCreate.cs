@@ -100,8 +100,8 @@ namespace KaraokeManagment.API.Migrations
                 columns: new[] { "Id", "CreatedAt", "PasswordHash", "Role", "Username" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "admin123", 1, "admin" },
-                    { 2, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "worker123", 2, "worker" }
+                    { 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "$2a$11$LtABhcCQGHyVHs9cblE/DeliCQ1t/6E5Amr6UzKwve.qwjRAd8LHq", 1, "admin" },
+                    { 2, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "$2a$11$t2TuMM7YTUpAf3ZxQSSg6O3fZ/beR9mDuiPAuU4l9hBE2xu1aw4Nq", 2, "worker" }
                 });
 
             migrationBuilder.CreateIndex(

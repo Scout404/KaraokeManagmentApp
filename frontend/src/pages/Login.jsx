@@ -97,6 +97,9 @@ function Login() {
           <button type="submit" className="login-button" disabled={loading}>
             {loading ? 'Logging in...' : 'Login'}
           </button>
+          ,<button>
+            <a href="/register" className="register-link">Don't have an account? Register</a>
+          </button>
         </form>
 
         <div className="login-footer">

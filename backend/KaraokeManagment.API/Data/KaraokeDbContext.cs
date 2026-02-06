@@ -25,7 +25,7 @@ public class KaraokeDbContext : DbContext
             {
                 Id = 1,
                 Username = "admin",
-                PasswordHash = "admin123", // TODO: Hash this properly
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123"), 
                 Role = UserRole.Admin,
                 CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc) // Fixed date
             },
@@ -33,7 +33,7 @@ public class KaraokeDbContext : DbContext
             {
                 Id = 2,
                 Username = "worker",
-                PasswordHash = "worker123", // TODO: Hash this properly
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("worker123"), // TODO: Hash this properly
                 Role = UserRole.Worker,
                 CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc) // Fixed date
             }
