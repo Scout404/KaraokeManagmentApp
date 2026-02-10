@@ -145,11 +145,68 @@ return (
 
     {/* MODAL */}
     {showAddSingerModal && (
-      <div className="modal-overlay" onClick={() => setShowAddSingerModal(false)}>
-        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-          <div className="modal-header">
-            <h2>Add New Singer</h2>
-            <button className="modal-close" onClick={() => setShowAddSingerModal(false)}>
+      <div 
+        onClick={() => setShowAddSingerModal(false)}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.6)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+        }}
+      >
+        <div 
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            background: '#151521',
+            borderRadius: '16px',
+            border: '1px solid #26263a',
+            maxWidth: '500px',
+            width: '90%',
+            maxHeight: '80vh',
+            overflowY: 'auto',
+            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
+          }}
+        >
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '20px 24px',
+            borderBottom: '1px solid #26263a',
+          }}>
+            <h2 style={{ margin: 0, fontSize: '20px', color: '#f7f7ff' }}>Add New Singer</h2>
+            <button 
+              onClick={() => setShowAddSingerModal(false)}
+              style={{
+                background: 'none',
+                border: 'none',
+                fontSize: '28px',
+                cursor: 'pointer',
+                color: '#a0a0b5',
+                padding: 0,
+                width: '32px',
+                height: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '4px',
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.color = '#f7f7ff';
+                e.target.style.background = '#1a1b2b';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.color = '#a0a0b5';
+                e.target.style.background = 'none';
+              }}
+            >
               ×
             </button>
           </div>
