@@ -49,7 +49,6 @@ function SingersList() {
             <tr style={{ borderBottom: '2px solid #ddd' }}>
               <th style={{ padding: '10px', textAlign: 'left' }}>ID</th>
               <th style={{ padding: '10px', textAlign: 'left' }}>Name</th>
-              <th style={{ padding: '10px', textAlign: 'left' }}>Phone</th>
               <th style={{ padding: '10px', textAlign: 'left' }}>Registered</th>
               <th style={{ padding: '10px', textAlign: 'left' }}>Actions</th>
             </tr>
@@ -59,7 +58,6 @@ function SingersList() {
               <tr key={singer.id} style={{ borderBottom: '1px solid #ddd' }}>
                 <td style={{ padding: '10px' }}>{singer.id}</td>
                 <td style={{ padding: '10px' }}>{singer.name}</td>
-                <td style={{ padding: '10px' }}>{singer.phoneNumber || 'N/A'}</td>
                 <td style={{ padding: '10px' }}>
                   {new Date(singer.registeredAt).toLocaleDateString()}
                 </td>

@@ -4,7 +4,6 @@ import { singerService } from '../services/singerService';
 function SingerRegistrationForm({ onRegistered }) {
   const [formData, setFormData] = useState({
     name: '',
-    phoneNumber: '',
   });
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -29,7 +28,7 @@ function SingerRegistrationForm({ onRegistered }) {
     try {
       await singerService.registerSinger(formData);
       setSuccess(true);
-      setFormData({ name: '', phoneNumber: '' });
+      setFormData({ name: '' });
       
       // Call parent callback to refresh the list
       if (onRegistered) {
@@ -63,24 +62,6 @@ function SingerRegistrationForm({ onRegistered }) {
               borderRadius: '4px',
             }}
             required
-          />
-        </div>
-
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>
-            Phone Number
-          </label>
-          <input
-            type="tel"
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '8px',
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-            }}
           />
         </div>
 
