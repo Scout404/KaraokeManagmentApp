@@ -4,7 +4,6 @@ import { singerService } from '../services/singerService';
 function SingerRegistrationForm({ onRegistered }) {
   const [formData, setFormData] = useState({
     name: '',
-    phoneNumber: '',
   });
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -29,7 +28,7 @@ function SingerRegistrationForm({ onRegistered }) {
     try {
       await singerService.registerSinger(formData);
       setSuccess(true);
-      setFormData({ name: '', phoneNumber: '' });
+      setFormData({ name: '' });
       
       // Call parent callback to refresh the list
       if (onRegistered) {
@@ -44,11 +43,16 @@ function SingerRegistrationForm({ onRegistered }) {
   };
 
   return (
-    <div style={{ marginBottom: '30px' }}>
-      <h2>Register New Singer</h2>
-      <form onSubmit={handleSubmit} style={{ maxWidth: '400px' }}>
+    <div style={{ padding: '24px' }}>
+      <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>
+          <label style={{ 
+            display: 'block', 
+            marginBottom: '8px',
+            color: '#f7f7ff',
+            fontSize: '14px',
+            fontWeight: 500,
+          }}>
             Name *
           </label>
           <input
@@ -58,38 +62,38 @@ function SingerRegistrationForm({ onRegistered }) {
             onChange={handleChange}
             style={{
               width: '100%',
-              padding: '8px',
-              border: '1px solid #ddd',
-              borderRadius: '4px',
+              padding: '10px 12px',
+              border: '1px solid #2f3144',
+              borderRadius: '8px',
+              background: '#0c0c15',
+              color: '#f7f7ff',
+              fontSize: '14px',
+              boxSizing: 'border-box',
             }}
             required
           />
         </div>
 
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>
-            Phone Number
-          </label>
-          <input
-            type="tel"
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '8px',
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-            }}
-          />
-        </div>
-
         {error && (
-          <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>
+          <div style={{ 
+            color: '#ff3b81', 
+            marginBottom: '12px',
+            fontSize: '13px',
+            padding: '8px 12px',
+            background: 'rgba(255, 59, 129, 0.1)',
+            borderRadius: '6px',
+          }}>{error}</div>
         )}
 
         {success && (
-          <div style={{ color: 'green', marginBottom: '10px' }}>
+          <div style={{ 
+            color: '#4cd964', 
+            marginBottom: '12px',
+            fontSize: '13px',
+            padding: '8px 12px',
+            background: 'rgba(76, 217, 100, 0.1)',
+            borderRadius: '6px',
+          }}>
             Singer registered successfully!
           </div>
         )}
@@ -97,13 +101,15 @@ function SingerRegistrationForm({ onRegistered }) {
         <button
           type="submit"
           style={{
-            backgroundColor: '#28a745',
-            color: 'white',
+            width: '100%',
+            padding: '12px 20px',
+            borderRadius: '999px',
             border: 'none',
-            padding: '10px 20px',
-            borderRadius: '4px',
+            background: 'linear-gradient(90deg, #ff1fcf, #5b21ff)',
+            color: '#fff',
+            fontWeight: 600,
+            fontSize: '14px',
             cursor: 'pointer',
-            fontSize: '16px',
           }}
         >
           Register Singer
