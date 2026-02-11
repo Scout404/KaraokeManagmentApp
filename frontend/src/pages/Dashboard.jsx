@@ -56,7 +56,7 @@ return (
             + Add Singer
           </button>
           <button
-            onClick={() => openInNewTab('https://example.com')}
+            onClick={() => openInNewTab('/displayqueue')}
             className="display-queue-button">
             Display Queue
         </button>    

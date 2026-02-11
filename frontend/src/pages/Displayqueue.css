@@ -1,0 +1,92 @@
+.Displayqueue {
+   height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background: radial-gradient(circle at top left, #2a1c4f 0, #050509 55%);
+  color: #f7f7ff;
+  font-family: "Be Vietnam Pro", "sans-serif";
+}
+
+.Displayqueue-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  border-bottom: 1px solid #26263a;
+  background: rgba(5, 5, 9, 0.7);
+  backdrop-filter: blur(8px);
+}
+
+.Displayqueue-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.Displayqueue-app-title {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #c813ec;
+}
+
+.Displayqueue-app-subtitle {
+  font-size: 20px;
+  color: #c813ec;
+}
+
+/* CENTER COLUMN */
+.Displayqueue-main {
+  display: flex;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.Displayqueue-main-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  height: 100%;
+  gap: 20px;
+  padding: 20px;
+}
+
+.Displayqueue-left-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.Displayqueue-left-panel-header {
+  font-size: 14px;
+  font-weight: 700;
+  color: #c813ec;
+  margin-bottom: 10px;
+}
+
+.Displayqueue-left-panel-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.Displayqueue-right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.Displayqueue-right-panel-header {
+  font-size: 24px;
+  font-weight: 700;
+  color: #c813ec;
+  margin-bottom: 10px;
+}
+
+.Displayqueue-right-panel-content {
+  flex: 1;
+  overflow-y: auto;
+}
