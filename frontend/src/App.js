@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import Displayqueue from './pages/Displayqueue';
 import './App.css';
 
 function App() {
@@ -9,6 +10,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/displayqueue" element={<Displayqueue />} />
         <Route path="/" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>

@@ -32,6 +32,11 @@ function Dashboard() {
 
   if (!user) return null;
 
+  function openInNewTab(url) {
+    const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
+    if (newWindow) newWindow.opener = null;
+  };
+
 return (
   <div className="dashboard">
     <header className="dashboard-header">
@@ -50,6 +55,11 @@ return (
           >
             + Add Singer
           </button>
+          <button
+            onClick={() => openInNewTab('/displayqueue')}
+            className="display-queue-button">
+            Display Queue
+        </button>    
       </div>
     </header>
 

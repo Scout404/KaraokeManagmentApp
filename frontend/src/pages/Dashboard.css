@@ -166,6 +166,16 @@
   cursor: pointer;
 }
 
+.display-queue-button {
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(90deg, #ff1fcf, #5b21ff);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 /* stats + now playing grid */
 .content-grid {
   display: grid;
