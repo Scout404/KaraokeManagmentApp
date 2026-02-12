@@ -135,24 +135,6 @@ function Displayqueue() {
               </div>
             </div>
 
-            {/* ALERT MESSAGE */}
-            <div className="Displayqueue-alert">
-              <div className="Displayqueue-alert-icon">
-                <svg viewBox="0 0 24 24" fill="none">
-                  <path 
-                    d="M12 2L2 7V17L12 22L22 17V7L12 2Z" 
-                    stroke="#e935e5" 
-                    strokeWidth="2"
-                    fill="none"
-                  />
-                  <circle cx="12" cy="12" r="3" fill="#e935e5"/>
-                </svg>
-              </div>
-              <div className="Displayqueue-alert-text">
-                <p>Please be ready 5 minutes before your turn.</p>
-                <p>Check your mic battery!</p>
-              </div>
-            </div>
           </section>
 
           {/* RIGHT COLUMN */}

@@ -115,22 +115,31 @@
   min-height: 0;
   overflow: hidden;
   padding: 24px;
-  gap: 24px;
+  flex: 1;
 }
 
 .Displayqueue-main-content {
   display: grid;
-  grid-template-columns: 480px 1fr;
+  grid-template-columns: 1fr 1fr;
   width: 100%;
   height: 100%;
   gap: 24px;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* LEFT COLUMN */
 .Displayqueue-left-panel {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
+  background: rgba(15, 10, 25, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 28px;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* NOW SINGING CARD */
@@ -256,8 +265,10 @@
 
 /* ON DECK SECTION */
 .Displayqueue-on-deck {
-  background: transparent;
-  padding: 0;
+  flex: 0 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .Displayqueue-section-title-secondary {
@@ -271,47 +282,71 @@
 
 .Displayqueue-on-deck-card {
   background: rgba(20, 15, 35, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  padding: 20px 24px;
+  border: 2px solid rgba(233, 53, 229, 0.2);
+  border-radius: 20px;
+  padding: 32px 28px;
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 24px;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.Displayqueue-on-deck-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at bottom left, rgba(233, 53, 229, 0.05) 0%, transparent 60%);
+  pointer-events: none;
 }
 
 .Displayqueue-deck-position {
-  font-size: 28px;
+  font-size: 56px;
   font-weight: 800;
-  color: rgba(247, 247, 255, 0.3);
+  color: rgba(247, 247, 255, 0.2);
   font-style: italic;
-  min-width: 50px;
+  min-width: 80px;
+  position: relative;
+  z-index: 1;
 }
 
 .Displayqueue-deck-info {
   flex: 1;
+  position: relative;
+  z-index: 1;
 }
 
 .Displayqueue-deck-name {
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 32px;
+  font-weight: 800;
+  font-style: italic;
   color: #ffffff;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
+  line-height: 1;
 }
 
 .Displayqueue-deck-songs {
-  font-size: 14px;
-  color: rgba(247, 247, 255, 0.6);
+  font-size: 16px;
+  color: rgba(247, 247, 255, 0.7);
+  font-weight: 600;
 }
 
 .Displayqueue-deck-status {
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(247, 247, 255, 0.7);
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 12px;
+  background: rgba(233, 53, 229, 0.15);
+  border: 1px solid rgba(233, 53, 229, 0.3);
+  color: #e935e5;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  position: relative;
+  z-index: 1;
 }
 
 /* ALERT MESSAGE */
@@ -321,34 +356,41 @@
   border-radius: 12px;
   padding: 16px 20px;
   display: flex;
-  align-items: center;
-  gap: 16px;
+  align-items: flex-start;
+  gap: 12px;
   margin-top: auto;
+  flex-shrink: 0;
 }
 
 .Displayqueue-alert-icon {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 2px;
 }
 
 .Displayqueue-alert-icon svg {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   fill: #e935e5;
 }
 
 .Displayqueue-alert-text {
   font-size: 13px;
   color: rgba(247, 247, 255, 0.9);
-  line-height: 1.5;
+  line-height: 1.4;
+  flex: 1;
 }
 
 .Displayqueue-alert-text p {
   margin: 0;
+}
+
+.Displayqueue-alert-text p + p {
+  margin-top: 2px;
 }
 
 /* RIGHT COLUMN */
@@ -360,6 +402,8 @@
   border-radius: 20px;
   padding: 28px;
   overflow: hidden;
+  min-width: 0;
+  min-height: 0;
 }
 
 .Displayqueue-upcoming-header {
@@ -561,10 +605,6 @@
 
 /* Responsive Design */
 @media (max-width: 1400px) {
-  .Displayqueue-main-content {
-    grid-template-columns: 420px 1fr;
-  }
-  
   .Displayqueue-singer-name {
     font-size: 36px;
   }
@@ -572,17 +612,20 @@
   .Displayqueue-song-title {
     font-size: 20px;
   }
+  
+  .Displayqueue-deck-name {
+    font-size: 28px;
+  }
+  
+  .Displayqueue-deck-position {
+    font-size: 48px;
+  }
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 900px) {
   .Displayqueue-main-content {
     grid-template-columns: 1fr;
     gap: 20px;
-  }
-  
-  .Displayqueue-left-panel {
-    max-width: 600px;
-    margin: 0 auto;
   }
 }
 
