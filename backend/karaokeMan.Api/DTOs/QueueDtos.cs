@@ -1,0 +1,33 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace KaraokeMan.Api.DTOs
+{
+    public class AddToQueueDto
+    {
+        [Required]
+        public string SingerName { get; set; } = string.Empty;
+        
+        public int? SongId { get; set; }
+        
+        public int SessionId { get; set; } = 1; // Default session
+    }
+    
+    public class QueueItemDto
+    {
+        public int Id { get; set; }
+        public int Position { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public int SingerId { get; set; }
+        public string SingerName { get; set; } = string.Empty;
+        public int? SongId { get; set; }
+        public string? SongTitle { get; set; }
+        public string? SongArtist { get; set; }
+        public DateTime CreatedAt { get; set; }
+    }
+    
+    public class ReorderQueueDto
+    {
+        [Required]
+        public List<int> OrderedIds { get; set; } = new();
+    }
+}

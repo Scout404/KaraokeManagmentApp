@@ -2,14 +2,20 @@ using System.ComponentModel.DataAnnotations;
 
 namespace KaraokeMan.Api.Models
 {
-    public class Singer
+    public class Song
     {
         [Key]
         public int Id { get; set; }
         
         [Required]
+        [MaxLength(300)]
+        public string Title { get; set; } = string.Empty;
+        
         [MaxLength(200)]
-        public string Name { get; set; } = string.Empty;
+        public string? Artist { get; set; }
+        
+        [MaxLength(500)]
+        public string? Link { get; set; }
         
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         
