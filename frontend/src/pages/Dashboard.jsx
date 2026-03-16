@@ -1,232 +1,224 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SingersList from '../components/SingersList';
-import SingerRegistrationForm from '../components/SingerRegistrationForm';
+import { sessionService } from '../services/sessionService';
 import './Dashboard.css';
 
 function Dashboard() {
   const [user, setUser] = useState(null);
-  const [refreshKey, setRefreshKey] = useState(0);
-  const [showAddSingerModal, setShowAddSingerModal] = useState(false);
+  const [sessions, setSessions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showNewSessionModal, setShowNewSessionModal] = useState(false);
+  const [newSession, setNewSession] = useState({ name: '', roomName: '' });
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is logged in
     const storedUser = localStorage.getItem('user');
     if (!storedUser) {
       navigate('/login');
     } else {
       setUser(JSON.parse(storedUser));
+      loadSessions();
     }
   }, [navigate]);
 
+  const loadSessions = async () => {
+    try {
+      setLoading(true);
+      const data = await sessionService.getAllSessions();
+      setSessions(data);
+    } catch (err) {
+      setError('Failed to load sessions');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreateSession = async () => {
+    if (!newSession.name.trim()) return;
+    try {
+      const created = await sessionService.createSession(newSession.name, newSession.roomName);
+      setShowNewSessionModal(false);
+      setNewSession({ name: '', roomName: '' });
+      navigate(`/session/${created.id}`);
+    } catch (err) {
+      setError('Failed to create session');
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
     navigate('/login');
   };
 
-  const handleRegistered = () => {
-    setRefreshKey((prev) => prev + 1);
-    setShowAddSingerModal(false);
+  const formatDuration = (startedAt, endedAt) => {
+    const end = endedAt ? new Date(endedAt) : new Date();
+    const diff = Math.floor((end - new Date(startedAt)) / 60000);
+    const h = Math.floor(diff / 60);
+    const m = diff % 60;
+    return h > 0 ? `${h}H ${m}M` : `${m}M`;
   };
 
   if (!user) return null;
 
-  function openInNewTab(url) {
-    const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
-    if (newWindow) newWindow.opener = null;
-  };
+  const recentSessions = [...sessions]
+    .sort((a, b) => new Date(b.startedAt) - new Date(a.startedAt))
+    .slice(0, 6);
 
-return (
-  <div className="dashboard">
-    <header className="dashboard-header">
-      <div className="header-left">
-        <span className="app-title">Karaoke Management</span>
-        <span className="app-subtitle">Live Session</span>
-      </div>
-      <div className="header-right">
-        <input
-            className="search-input"
-            placeholder="Search songs or singers..."
-          />
-          <button
-            onClick={() => setShowAddSingerModal(true)}
-            className="add-singer-button"
-          >
-            + Add Singer
-          </button>
-          <button
-            onClick={() => openInNewTab('/displayqueue')}
-            className="display-queue-button">
-            Display Queue
-        </button>    
-      </div>
-    </header>
-
-    <div className="dashboard-body">
-      {/* LEFT SIDEBAR */}
-      <aside className="sidebar">
-      <div className="logo">VibeLounge</div>
-      <nav className="nav">
-        <button className="nav-item active">
-          <span className="menu-icon">📋</span> Queue
-        </button>
-        <button className="nav-item">
-          <span className="menu-icon">🎤</span> Singers
-        </button>
-        <button className="nav-item">
-          <span className="menu-icon">📊</span> Insights
-        </button>
-      </nav>
-
-      <div className="sidebar-bottom">
-        <span className="user-role">{user.role}</span>
-        <span className="username">{user.username}</span>
-        <button onClick={handleLogout} className="logout-button">
-          Logout
-        </button>
-      </div>
-    </aside>
-
-    {/* CENTER COLUMN */}
-    <div className="main">
-      <header className="topbar">
-        <div className="session-info">
-          <h1>Session Overview</h1>
-          <p>Friday Night Live – Neon Room</p>
+  return (
+    <div className="ds-root">
+      {/* HEADER */}
+      <header className="ds-header">
+        <div className="ds-header-left">
+          <span className="ds-header-icon">🎤</span>
+          <span className="ds-brand">KaraokeDash</span>
+          <nav className="ds-nav">
+            <a className="ds-nav-link active" href="#">Dashboard</a>
+            <a className="ds-nav-link" href="#">Sessions</a>
+            <a className="ds-nav-link" href="#">Library</a>
+            <a className="ds-nav-link" href="#">Settings</a>
+          </nav>
         </div>
-
-        
+        <div className="ds-header-right">
+          {/* <div className="ds-search-wrap">
+            <span className="ds-search-icon">🔍</span>
+            <input className="ds-search" placeholder="Search tracks..." />
+          </div> */}
+          <button onClick={handleLogout} className="ds-logout-btn">
+            Logout
+          </button>
+        </div>
       </header>
 
-      <div className="content-grid">
-        <section className="stats">
-          <div className="stat-card">
-            <span>Total Singers</span>
-            <h3>24</h3>
-            <p>+12% from last week</p>
-          </div>
-          <div className="stat-card">
-            <span>Songs Today</span>
-            <h3>142</h3>
-            <p>+5% vs target</p>
-          </div>
-          <div className="stat-card">
-            <span>Wait Time</span>
-            <h3>45m</h3>
-            <p>Peak hours active</p>
-          </div>
-        </section>
-
-        <section className="now-playing">
-          <div className="badge-row">
-            <span className="badge on-air">On Air</span>
-            <span className="badge room">Neon Room</span>
-          </div>
-          <div className="now-playing-main">
-            <h4>Now Singing</h4>
-            <h2>Sarah J.</h2>
-            <p>"Don't Stop Believin'" – Journey</p>
-          </div>
-          <div className="controls">
-            <button className="control-btn">⏮</button>
-            <button className="control-btn play">⏯</button>
-            <button className="control-btn">⏭</button>
-          </div>
-        </section>
-      </div>
-
-      <section className="bottom-strip">
-        <h3>Singer Directory</h3>
-        <button className="link-button">Manage All Singers →</button>
-      </section>
-    </div>
-
-    {/* RIGHT SIDEBAR */}
-    <aside className="right-panel">
-      <div className="queue-header">
-        <h3>Queue Preview</h3>
-        <span>Next 5</span>
-      </div>
-      <SingersList key={refreshKey} />
-      <button className="insert-btn">+ Insert into Queue</button>
-    </aside>
-    </div>
-
-    {/* MODAL */}
-    {showAddSingerModal && (
-      <div 
-        onClick={() => setShowAddSingerModal(false)}
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0, 0, 0, 0.6)',
-          backdropFilter: 'blur(4px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-        }}
-      >
-        <div 
-          onClick={(e) => e.stopPropagation()}
-          style={{
-            background: '#151521',
-            borderRadius: '16px',
-            border: '1px solid #26263a',
-            maxWidth: '500px',
-            width: '90%',
-            maxHeight: '80vh',
-            overflowY: 'auto',
-            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
-          }}
-        >
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '20px 24px',
-            borderBottom: '1px solid #26263a',
-          }}>
-            <h2 style={{ margin: 0, fontSize: '20px', color: '#f7f7ff' }}>Add New Singer</h2>
-            <button 
-              onClick={() => setShowAddSingerModal(false)}
-              style={{
-                background: 'none',
-                border: 'none',
-                fontSize: '28px',
-                cursor: 'pointer',
-                color: '#a0a0b5',
-                padding: 0,
-                width: '32px',
-                height: '32px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '4px',
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.color = '#f7f7ff';
-                e.target.style.background = '#1a1b2b';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.color = '#a0a0b5';
-                e.target.style.background = 'none';
-              }}
-            >
-              ×
-            </button>
-          </div>
-          <SingerRegistrationForm onRegistered={handleRegistered} />
+      {/* MAIN */}
+      <main className="ds-main">
+        {/* HERO */}
+        <div className="ds-hero">
+          <div className="ds-hero-icon">🎵</div>
+          <h1 className="ds-hero-title">Ready to Start the Show?</h1>
+          <p className="ds-hero-sub">
+            Create a new session to invite singers, manage the queue, and stream
+            high-quality YouTube karaoke tracks in real-time.
+          </p>
+          <button
+            className="ds-start-btn"
+            onClick={() => setShowNewSessionModal(true)}
+          >
+            <span>＋</span> Start New Session
+          </button>
         </div>
-      </div>
-    )}
-  </div>
-);
 
+        {/* RECENT SESSIONS */}
+        <div className="ds-recent">
+          <div className="ds-recent-header">
+            <h2 className="ds-recent-title">🕐 Recent Sessions</h2>
+            <a className="ds-view-all" href="#">View All History</a>
+          </div>
+
+          {error && <p className="ds-error">{error}</p>}
+
+          {loading ? (
+            <p className="ds-muted">Loading sessions...</p>
+          ) : recentSessions.length === 0 ? (
+            <p className="ds-muted">No sessions yet — start your first one above!</p>
+          ) : (
+            <div className="ds-cards">
+              {recentSessions.map(session => (
+                <div
+                  key={session.id}
+                  className={`ds-card ${session.isActive ? 'ds-card--active' : ''}`}
+                  onClick={() =>
+                    session.isActive && navigate(`/session/${session.id}`)
+                  }
+                >
+                  <div className="ds-card-top">
+                    <div className="ds-card-icon">📅</div>
+                    <span className="ds-card-duration">
+                      {session.isActive
+                        ? '🟢 Live'
+                        : formatDuration(session.startedAt, session.endedAt)}
+                    </span>
+                  </div>
+                  <h3 className="ds-card-name">{session.name}</h3>
+                  <p className="ds-card-date">
+                    {new Date(session.startedAt).toLocaleDateString('en-US', {
+                      month: 'long', day: 'numeric', year: 'numeric',
+                    })}
+                    {session.roomName && ` · ${session.roomName}`}
+                  </p>
+                  <div className="ds-card-meta">
+                    <span>👥 {session.singerCount} Singers</span>
+                  </div>
+                  {session.isActive && (
+                    <button
+                      className="ds-card-open"
+                      onClick={e => {
+                        e.stopPropagation();
+                        navigate(`/session/${session.id}`);
+                      }}
+                    >
+                      Open Session →
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* FOOTER */}
+        <footer className="ds-footer">
+          <p className="ds-footer-quote">
+            "Where every shower singer becomes a rockstar."
+          </p>
+          <div className="ds-footer-links">
+            <a href="#">Documentation</a>
+            <a href="#">Help Center</a>
+            <a href="#">Track Library</a>
+          </div>
+        </footer>
+      </main>
+
+      {/* NEW SESSION MODAL */}
+      {showNewSessionModal && (
+        <div
+          className="ds-overlay"
+          onClick={() => setShowNewSessionModal(false)}
+        >
+          <div className="ds-modal" onClick={e => e.stopPropagation()}>
+            <div className="ds-modal-header">
+              <h2>New Session</h2>
+              <button onClick={() => setShowNewSessionModal(false)}>×</button>
+            </div>
+            <div className="ds-modal-body">
+              <label>Session Name *</label>
+              <input
+                className="ds-input"
+                placeholder="e.g. Friday Night Vibes"
+                value={newSession.name}
+                onChange={e =>
+                  setNewSession({ ...newSession, name: e.target.value })
+                }
+              />
+              <label>Room Name</label>
+              <input
+                className="ds-input"
+                placeholder="e.g. Neon Room"
+                value={newSession.roomName}
+                onChange={e =>
+                  setNewSession({ ...newSession, roomName: e.target.value })
+                }
+              />
+              <button className="ds-start-btn" onClick={handleCreateSession}>
+                🎤 Start Session
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default Dashboard;

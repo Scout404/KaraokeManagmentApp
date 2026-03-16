@@ -11,7 +11,12 @@ namespace KaraokeMan.Api.Models
         [MaxLength(200)]
         public string Name { get; set; } = string.Empty;
         
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        [MaxLength(200)]
+        public string? RoomName { get; set; } = string.Empty;
+        
+        public DateTime StartedAt { get; set; } = DateTime.UtcNow;
+
+        public DateTime? EndedAt { get; set; }
         
         public bool IsActive { get; set; } = true;
         

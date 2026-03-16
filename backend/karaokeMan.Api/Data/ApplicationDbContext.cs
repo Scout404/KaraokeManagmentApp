@@ -45,7 +45,7 @@ namespace KaraokeMan.Api.Data
                 {
                     Id = 1,
                     Name = "Default Session",
-                    CreatedAt = DateTime.UtcNow,
+                    StartedAt = DateTime.UtcNow,
                     IsActive = true
                 }
             );

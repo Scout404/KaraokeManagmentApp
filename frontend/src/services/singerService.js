@@ -4,7 +4,7 @@ export const singerService = {
   // Get all singers
   getAllSingers: async () => {
     const response = await api.get('/singers');
-    return response.data;
+    return response.data.singers;
   },
 
   // Get singer by ID
