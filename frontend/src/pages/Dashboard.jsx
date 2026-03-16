@@ -62,9 +62,7 @@ function Dashboard() {
 
   if (!user) return null;
 
-  const recentSessions = [...sessions]
-    .sort((a, b) => new Date(b.startedAt) - new Date(a.startedAt))
-    .slice(0, 6);
+  const activeSessions = sessions.filter(s => s.isActive);
 
   return (
     <div className="ds-root">
@@ -74,10 +72,9 @@ function Dashboard() {
           <span className="ds-header-icon">🎤</span>
           <span className="ds-brand">KaraokeDash</span>
           <nav className="ds-nav">
-            <a className="ds-nav-link active" href="#">Dashboard</a>
-            <a className="ds-nav-link" href="#">Sessions</a>
-            <a className="ds-nav-link" href="#">Library</a>
-            <a className="ds-nav-link" href="#">Settings</a>
+            <a className="app-nav-link" onClick={() => navigate('/dashboard')}>Dashboard</a>
+            <a className="app-nav-link" onClick={() => navigate('/sessions')}>Sessions</a>
+            <a className="app-nav-link" href="#">Library</a>
           </nav>
         </div>
         <div className="ds-header-right">
@@ -109,58 +106,45 @@ function Dashboard() {
           </button>
         </div>
 
-        {/* RECENT SESSIONS */}
+        {/* ACTIVE SESSIONS */}
         <div className="ds-recent">
           <div className="ds-recent-header">
-            <h2 className="ds-recent-title">🕐 Recent Sessions</h2>
-            <a className="ds-view-all" href="#">View All History</a>
+            <h2 className="ds-recent-title">🟢 Active Sessions</h2>
           </div>
 
           {error && <p className="ds-error">{error}</p>}
 
           {loading ? (
-            <p className="ds-muted">Loading sessions...</p>
-          ) : recentSessions.length === 0 ? (
-            <p className="ds-muted">No sessions yet — start your first one above!</p>
+            <p className="ds-muted">Loading...</p>
+          ) : activeSessions.length === 0 ? (
+            <p className="ds-muted">No active sessions — start one above!</p>
           ) : (
             <div className="ds-cards">
-              {recentSessions.map(session => (
+              {activeSessions.map(session => (
                 <div
                   key={session.id}
-                  className={`ds-card ${session.isActive ? 'ds-card--active' : ''}`}
-                  onClick={() =>
-                    session.isActive && navigate(`/session/${session.id}`)
-                  }
+                  className="ds-card ds-card--active"
+                  onClick={() => navigate(`/session/${session.id}`)}
                 >
                   <div className="ds-card-top">
-                    <div className="ds-card-icon">📅</div>
-                    <span className="ds-card-duration">
-                      {session.isActive
-                        ? '🟢 Live'
-                        : formatDuration(session.startedAt, session.endedAt)}
-                    </span>
+                    <div className="ds-card-icon">🎤</div>
+                    <span className="ds-card-duration">🟢 Live</span>
                   </div>
                   <h3 className="ds-card-name">{session.name}</h3>
                   <p className="ds-card-date">
-                    {new Date(session.startedAt).toLocaleDateString('en-US', {
-                      month: 'long', day: 'numeric', year: 'numeric',
-                    })}
-                    {session.roomName && ` · ${session.roomName}`}
+                    {session.roomName || 'No room'} ·{' '}
+                    {new Date(session.startedAt).toLocaleDateString()}
                   </p>
                   <div className="ds-card-meta">
                     <span>👥 {session.singerCount} Singers</span>
+                    <span>⏱ {formatDuration(session.startedAt, null)}</span>
                   </div>
-                  {session.isActive && (
-                    <button
-                      className="ds-card-open"
-                      onClick={e => {
-                        e.stopPropagation();
-                        navigate(`/session/${session.id}`);
-                      }}
-                    >
-                      Open Session →
-                    </button>
-                  )}
+                  <button
+                    className="ds-card-open"
+                    onClick={e => { e.stopPropagation(); navigate(`/session/${session.id}`); }}
+                  >
+                    Open Session →
+                  </button>
                 </div>
               ))}
             </div>

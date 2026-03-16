@@ -3,6 +3,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Displayqueue from './pages/Displayqueue';
 import ActiveSession from './pages/ActiveSession';
+import SessionsPage from './pages/SessionsPage';
 import './App.css';
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/session/:id" element={<ActiveSession />} />
         <Route path="/displayqueue" element={<Displayqueue />} />
+        <Route path="/sessions" element={<SessionsPage />} />
         <Route path="/" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>

@@ -1,0 +1,194 @@
+.app-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #1f1022;
+  color: #f1f0f2;
+  font-family: "Be Vietnam Pro", system-ui, sans-serif;
+}
+
+/* ── HEADER ── */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 40px;
+  border-bottom: 1px solid #422348;
+  background: #1f1022;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.app-header-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.app-header-icon { font-size: 24px; color: #c813ec; }
+
+.app-brand {
+  font-size: 18px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.app-search-wrap {
+  display: flex;
+  align-items: center;
+  background: #422348;
+  border-radius: 8px;
+  padding: 0 12px;
+  height: 40px;
+  gap: 8px;
+}
+
+.app-search-icon { font-size: 14px; opacity: 0.6; }
+
+.app-search {
+  background: none;
+  border: none;
+  outline: none;
+  color: #f1f0f2;
+  font-size: 14px;
+  width: 220px;
+}
+
+.app-search::placeholder { color: #c092c9; }
+
+.app-header-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.app-nav { display: flex; gap: 32px; }
+
+.app-nav-link {
+  font-size: 14px;
+  font-weight: 500;
+  color: #c092c9;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.app-nav-link:hover { color: #c813ec; }
+
+.app-profile-btn {
+  background: #c813ec;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.app-profile-btn:hover { background: #a00ec0; }
+
+/* ── BODY ── */
+.app-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── SIDEBAR ── */
+.app-sidebar {
+  width: 256px;
+  border-right: 1px solid #422348;
+  background: #1f1022;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 57px;
+  height: calc(100vh - 57px);
+  overflow-y: auto;
+}
+
+.app-sidebar-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.app-sidebar-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #c092c9;
+  padding: 0 12px;
+  margin: 0 0 8px;
+}
+
+.app-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #c092c9;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s, color 0.2s;
+  width: 100%;
+}
+
+.app-sidebar-item:hover {
+  background: rgba(66, 35, 72, 0.5);
+  color: #f1f0f2;
+}
+
+.app-sidebar-item--active {
+  background: #422348;
+  color: #fff;
+}
+
+.app-sidebar-item--session {
+  padding: 8px 12px;
+}
+
+.app-session-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: pulse 1.5s infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.app-session-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.app-sidebar-bottom {
+  margin-top: auto;
+}
+
+/* ── CONTENT ── */
+.app-content {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+}
