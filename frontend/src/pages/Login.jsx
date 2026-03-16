@@ -1,21 +1,16 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { authService } from '../services/authService'; // adjust path if needed
 import './Login.css';
 
 function Login() {
-  const [formData, setFormData] = useState({
-    username: '',
-    password: '',
-  });
+  const [formData, setFormData] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
@@ -23,34 +18,19 @@ function Login() {
     setError('');
     setLoading(true);
 
-    // TODO: Replace with actual API call later
-    // For now, we'll use mock authentication
     try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const data = await authService.login(formData.username, formData.password);
+      // data = { token: "...", user: { id, username, email, role } }
+      
+      authService.saveUser({
+        ...data.user,
+        token: data.token,
+      });
 
-      // Mock credentials (we'll replace this with real auth later)
-      if (formData.username === 'admin' && formData.password === 'admin123') {
-        // Store auth token/user info (we'll use localStorage for now)
-        localStorage.setItem('user', JSON.stringify({
-          username: formData.username,
-          role: 'Admin'
-        }));
-        
-        // Redirect to dashboard
-        navigate('/dashboard');
-      } else if (formData.username === 'worker' && formData.password === 'worker123') {
-        localStorage.setItem('user', JSON.stringify({
-          username: formData.username,
-          role: 'Worker'
-        }));
-        
-        navigate('/dashboard');
-      } else {
-        setError('Invalid username or password');
-      }
+      navigate('/dashboard');
     } catch (err) {
-      setError('Login failed. Please try again.');
+      const message = err.response?.data?.message || 'Invalid username or password';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -97,18 +77,11 @@ function Login() {
           <button type="submit" className="login-button" disabled={loading}>
             {loading ? 'Logging in...' : 'Login'}
           </button>
-          ,<button>
-            <a href="/register" className="register-link">Don't have an account? Register</a>
-          </button>
-        </form>
 
-        <div className="login-footer">
-          <p className="demo-credentials">
-            <strong>Demo Credentials:</strong><br />
-            Admin: admin / admin123<br />
-            Worker: worker / worker123
-          </p>
-        </div>
+          {/* <a href="/register" className="register-link">
+            Don't have an account? Register
+          </a> */}
+        </form>
       </div>
     </div>
   );
