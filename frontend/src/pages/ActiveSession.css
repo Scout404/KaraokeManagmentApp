@@ -697,3 +697,23 @@
 .as-add-singer-btn:hover .as-add-singer-icon {
   transform: scale(1.1);
 }
+
+.as-display-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #2f1933;
+  color: #f1f0f2;
+  border: 1px solid #422348;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.as-display-btn:hover {
+  background: #422348;
+  border-color: #c813ec;
+}

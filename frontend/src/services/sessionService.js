@@ -25,4 +25,24 @@ export const sessionService = {
     const response = await api.delete(`/sessions/${id}`);
     return response.data;
   },
+
+  getSingersBySession: async (sessionId) => {
+  const response = await api.get(`/sessions/${sessionId}/singers`);
+  return response.data;
+  },
+
+  removeSingerFromSession: async (sessionId, singerId) => {
+    const response = await api.delete(`/sessions/${sessionId}/singers/${singerId}`);
+    return response.data;
+  },
+
+  assignSongToQueueItem: async (queueItemId, songId) => {
+  const response = await api.patch(`/queue/${queueItemId}/song`, { songId });
+    return response.data;
+  },
+
+  searchSongs: async (query) => {
+    const response = await api.get(`/songs/search?q=${encodeURIComponent(query)}`);
+    return response.data.songs;
+  },
 };

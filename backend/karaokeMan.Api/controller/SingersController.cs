@@ -36,12 +36,7 @@ namespace KaraokeMan.Api.Controllers
         [HttpPost]
         [Authorize]
         public async Task<ActionResult<object>> CreateSinger([FromBody] CreateSingerDto dto)
-        {
-            if (await _context.Singers.AnyAsync(s => s.Name == dto.Name))
-            {
-                return Conflict(new { message = "Singer already exists" });
-            }
-            
+        {                    
             var singer = new Singer
             {
                 Name = dto.Name
@@ -78,6 +73,75 @@ namespace KaraokeMan.Api.Controllers
             
             return Ok(new { message = "Singer deleted" });
         }
+
+        // GET /api/sessions/{sessionId}/singers
+        [HttpGet("/api/sessions/{sessionId}/singers")]
+        [Authorize]
+        public async Task<ActionResult> GetSingersBySession(int sessionId)
+        {
+            var session = await _context.Sessions.FindAsync(sessionId);
+            if (session == null)
+                return NotFound(new { message = "Session not found" });
+
+            var singers = await _context.QueueItems
+                .Where(q => q.SessionId == sessionId)
+                .Include(q => q.Singer)
+                .Include(q => q.Song)
+                .GroupBy(q => q.Singer)
+                .Select(g => new
+                {
+                    g.Key.Id,
+                    g.Key.Name,
+                    g.Key.CreatedAt,
+                    QueuePosition = g
+                        .Where(q => q.Status == "waiting" || q.Status == "singing")
+                        .OrderBy(q => q.Position)
+                        .Select(q => (int?)q.Position)
+                        .FirstOrDefault(),
+                    CurrentStatus = g
+                        .OrderBy(q => q.Position)
+                        .Select(q => q.Status)
+                        .FirstOrDefault(),
+                    SongsSung = g
+                        .Where(q => q.Status == "completed")
+                        .Select(q => new
+                        {
+                            SongTitle = q.Song != null ? q.Song.Title : "Unknown",
+                            SongArtist = q.Song != null ? q.Song.Artist : null,
+                            q.Position
+                        })
+                        .ToList(),
+                    TotalSongs = g.Count()
+                })
+                .ToListAsync();
+
+            return Ok(singers);
+        }
+
+        
+
+        // DELETE /api/sessions/{sessionId}/singers/{singerId}
+        [HttpDelete("/api/sessions/{sessionId}/singers/{singerId}")]
+        [Authorize]
+        public async Task<ActionResult> RemoveSingerFromSession(int sessionId, int singerId)
+        {
+            var session = await _context.Sessions.FindAsync(sessionId);
+            if (session == null)
+                return NotFound(new { message = "Session not found" });
+
+            var queueItems = await _context.QueueItems
+                .Where(q => q.SessionId == sessionId && q.SingerId == singerId)
+                .ToListAsync();
+
+            if (!queueItems.Any())
+                return NotFound(new { message = "Singer not found in this session" });
+
+            _context.QueueItems.RemoveRange(queueItems);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Singer removed from session" });
+        }
+
     }
     
     public class CreateSingerDto

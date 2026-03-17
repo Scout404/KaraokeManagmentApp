@@ -61,22 +61,16 @@ namespace KaraokeMan.Api.Services
         
         public async Task<QueueItemDto> AddToQueueAsync(AddToQueueDto dto)
         {
-            // Find or create singer
-            var singer = await _context.Singers
-                .FirstOrDefaultAsync(s => s.Name == dto.SingerName);
-            
+            // Verify singer exists
+            var singer = await _context.Singers.FindAsync(dto.SingerId);
             if (singer == null)
-            {
-                singer = new Singer { Name = dto.SingerName };
-                _context.Singers.Add(singer);
-                await _context.SaveChangesAsync();
-            }
-            
+                throw new InvalidOperationException("Singer not found");
+
             // Get next position
             var maxPosition = await _context.QueueItems
                 .Where(q => q.SessionId == dto.SessionId && q.Status == "waiting")
                 .MaxAsync(q => (int?)q.Position) ?? 0;
-            
+
             var queueItem = new QueueItem
             {
                 SessionId = dto.SessionId,
@@ -85,16 +79,15 @@ namespace KaraokeMan.Api.Services
                 Position = maxPosition + 1,
                 Status = "waiting"
             };
-            
+
             _context.QueueItems.Add(queueItem);
             await _context.SaveChangesAsync();
-            
-            // Reload with includes
+
             var created = await _context.QueueItems
                 .Include(q => q.Singer)
                 .Include(q => q.Song)
                 .FirstAsync(q => q.Id == queueItem.Id);
-            
+
             return MapToDto(created);
         }
         
@@ -191,6 +184,7 @@ namespace KaraokeMan.Api.Services
                 SongId = item.SongId,
                 SongTitle = item.Song?.Title,
                 SongArtist = item.Song?.Artist,
+                SongLink = item.Song?.Link,
                 CreatedAt = item.CreatedAt
             };
         }

@@ -45,9 +45,14 @@ function AppLayout({ user, onLogout, activeSessions = [], currentSessionId = nul
             >
               <span>🕐</span> All Sessions
             </button>
-            <button className="app-sidebar-item">
-              <span>👥</span> Manage Singers
-            </button>
+            {currentSessionId && (
+              <button
+                className="app-sidebar-item"
+                onClick={() => navigate(`/session/${currentSessionId}/singers`)}
+              >
+                <span>👥</span> Manage Singers
+              </button>
+            )}
             <button className="app-sidebar-item">
               <span>🎵</span> Song Library
             </button>

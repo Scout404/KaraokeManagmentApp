@@ -4,6 +4,7 @@ import Dashboard from './pages/Dashboard';
 import Displayqueue from './pages/Displayqueue';
 import ActiveSession from './pages/ActiveSession';
 import SessionsPage from './pages/SessionsPage';
+import SessionSingers from './pages/SessionSingers';
 import './App.css';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Route path="/session/:id" element={<ActiveSession />} />
         <Route path="/displayqueue" element={<Displayqueue />} />
         <Route path="/sessions" element={<SessionsPage />} />
+        <Route path="/session/:id/singers" element={<SessionSingers />} />
         <Route path="/" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>

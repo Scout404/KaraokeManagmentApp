@@ -5,11 +5,11 @@ namespace KaraokeMan.Api.DTOs
     public class AddToQueueDto
     {
         [Required]
-        public string SingerName { get; set; } = string.Empty;
+        public string SingerId { get; set; } 
         
         public int? SongId { get; set; }
         
-        public int SessionId { get; set; } = 1; // Default session
+        public int SessionId { get; set; }
     }
     
     public class QueueItemDto
@@ -22,7 +22,13 @@ namespace KaraokeMan.Api.DTOs
         public int? SongId { get; set; }
         public string? SongTitle { get; set; }
         public string? SongArtist { get; set; }
+        public string? SongLink { get; set; }
         public DateTime CreatedAt { get; set; }
+    }
+
+    public class AssignSongDto
+    {
+        public int? SongId { get; set; }
     }
     
     public class ReorderQueueDto

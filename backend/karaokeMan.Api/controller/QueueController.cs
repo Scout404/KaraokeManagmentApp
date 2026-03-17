@@ -1,3 +1,4 @@
+using KaraokeMan.Api.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -13,11 +14,13 @@ namespace KaraokeMan.Api.Controllers
     {
         private readonly IQueueService _queueService;
         private readonly IHubContext<KaraokeHub> _hubContext;
+        private readonly ApplicationDbContext _context;
         
-        public QueueController(IQueueService queueService, IHubContext<KaraokeHub> hubContext)
+        public QueueController(IQueueService queueService, IHubContext<KaraokeHub> hubContext, ApplicationDbContext context)
         {
             _queueService = queueService;
             _hubContext = hubContext;
+            _context = context;
         }
         
         [HttpGet]
@@ -26,6 +29,52 @@ namespace KaraokeMan.Api.Controllers
             var queue = await _queueService.GetQueueAsync(sessionId);
             return Ok(new { queue });
         }
+
+        // PATCH /api/queue/{queueItemId}/song
+        // Assigns a song to an existing queue item
+        // [HttpPatch("/api/queue/{queueItemId}/song")]
+        // [Authorize]
+        // public async Task<ActionResult> AssignSong(int queueItemId, [FromBody] AssignSongDto dto)
+        // {
+        //     var queueItem = await _context.QueueItems
+        //         .Include(q => q.Song)
+        //         .FirstOrDefaultAsync(q => q.Id == queueItemId);
+
+        //     if (queueItem == null)
+        //         return NotFound(new { message = "Queue item not found" });
+
+        //     // If songId provided, validate it exists
+        //     if (dto.SongId.HasValue)
+        //     {
+        //         var song = await _context.Songs.FindAsync(dto.SongId.Value);
+        //         if (song == null)
+        //             return NotFound(new { message = "Song not found" });
+        //         queueItem.SongId = dto.SongId.Value;
+        //     }
+        //     else
+        //     {
+        //         // Allow clearing the song
+        //         queueItem.SongId = null;
+        //     }
+
+        //     await _context.SaveChangesAsync();
+
+        //     return Ok(new
+        //     {
+        //         queueItem.Id,
+        //         queueItem.SingerId,
+        //         queueItem.SessionId,
+        //         queueItem.Position,
+        //         queueItem.Status,
+        //         Song = queueItem.Song == null ? null : new
+        //         {
+        //             queueItem.Song.Id,
+        //             queueItem.Song.Title,
+        //             queueItem.Song.Artist,
+        //             queueItem.Song.Link
+        //         }
+        //     });
+        // }
         
         [HttpGet("waiting")]
         public async Task<ActionResult<object>> GetWaitingQueue([FromQuery] int sessionId = 1)

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
 import { sessionService } from '../services/sessionService';
+import api from '../services/api';
 import './ActiveSession.css';
 
 function ActiveSession() {
@@ -10,15 +11,9 @@ function ActiveSession() {
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
   const [allSessions, setAllSessions] = useState([]);
+  const [queue, setQueue] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-
-  const queue = [
-    { id: 1, position: 1, singer: 'Alex Rivera', song: 'Rolling in the Deep', status: 'singing', youtubeUrl: null },
-    { id: 2, position: 2, singer: 'Sarah Jenkins', song: 'Flowers', status: 'waiting', youtubeUrl: 'https://youtube.com/watch?v=G7KNmW9a75Y' },
-    { id: 3, position: 3, singer: 'Marcus Chen', song: 'Blinding Lights', status: 'waiting', youtubeUrl: null },
-    { id: 4, position: 4, singer: 'Jordan B.', song: 'Bohemian Rhapsody', status: 'waiting', youtubeUrl: null },
-  ];
 
   const currentSinger = queue.find(q => q.status === 'singing');
   const upNext = queue.filter(q => q.status === 'waiting');
@@ -93,7 +88,13 @@ function ActiveSession() {
               {session.singerCount} singers · {formatElapsed(session.startedAt)}
             </p>
           </div>
-          <button className="as-end-btn" onClick={handleEndSession}>
+             <button
+                className="as-display-btn"
+                onClick={() => window.open('/displayqueue', '_blank', 'noopener,noreferrer')}
+                >
+                📺 Display Queue
+            </button>
+            <button className="as-end-btn" onClick={handleEndSession}>
             ⏹ Close Session
           </button>
         </div>
