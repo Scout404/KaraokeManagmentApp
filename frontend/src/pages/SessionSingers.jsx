@@ -115,9 +115,7 @@ function SessionSingers() {
         ) : singers.length === 0 ? (
           <div className="ss-empty">
             <p>🎤 No singers in this session yet.</p>
-            <button className="ss-add-btn" onClick={() => setShowAddModal(true)}>
-              Add First Singer
-            </button>
+            <p className="ss-muted">Use the "＋ Add Singer" button above to get started.</p>
           </div>
         ) : (
           <div className="ss-table">
