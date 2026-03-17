@@ -1,29 +1,70 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../services/api';
 import './Displayqueue.css';
 
 function Displayqueue() {
-  const [user, setUser] = useState(null);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentSinger, setCurrentSinger] = useState(null);
+  const [onDeck, setOnDeck] = useState(null);
+  const [upcomingQueue, setUpcomingQueue] = useState([]);
+  const [sessionName, setSessionName] = useState('');
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Check if user is logged in
-    const storedUser = localStorage.getItem('user');
-    if (!storedUser) {
-      navigate('/login');
-    } else {
-      setUser(JSON.parse(storedUser));
-    }
-  }, [navigate]);
+  // Get sessionId from URL query param
+  const sessionId = new URLSearchParams(window.location.search).get('sessionId');
 
-  // Update time every second
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) { navigate('/login'); return; }
+    if (!sessionId) { navigate('/dashboard'); return; }
+    loadQueueData();
+  }, [sessionId]);
+
+  // Refresh queue every 10 seconds
+  useEffect(() => {
+    const interval = setInterval(loadQueueData, 10000);
+    return () => clearInterval(interval);
+  }, [sessionId]);
+
+  // Update clock every second
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
+
+  const loadQueueData = async () => {
+    try {
+      const [queueRes, sessionRes] = await Promise.all([
+        api.get(`/queue?sessionId=${sessionId}`),
+        api.get(`/sessions/${sessionId}`),
+      ]);
+
+      const queue = queueRes.data.queue;
+      const session = sessionRes.data;
+      setSessionName(session.name);
+
+      // Current singer = status "singing"
+      const singing = queue.find(q => q.status === 'singing');
+      setCurrentSinger(singing || null);
+
+      // Waiting queue sorted by position
+      const waiting = queue
+        .filter(q => q.status === 'waiting')
+        .sort((a, b) => a.position - b.position);
+
+      // On deck = first waiting
+      setOnDeck(waiting[0] || null);
+
+      // Upcoming = rest of waiting
+      setUpcomingQueue(waiting.slice(1));
+    } catch (err) {
+      console.error('Failed to load queue', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const formatTime = (date) => {
     const hours = date.getHours();
@@ -33,33 +74,13 @@ function Displayqueue() {
     return { time: `${displayHours}:${minutes}`, period };
   };
 
-  // Sample data - replace with your actual data
-  const currentSinger = {
-    name: 'Sarah Jenkins',
-    song: 'Bohemian Rhapsody',
-    artist: 'QUEEN',
-    avatar: 'https://i.pravatar.cc/150?img=47',
-    progress: 65
-  };
-
-  const onDeck = {
-    position: '02',
-    name: 'Michael Rodriguez',
-    songs: 'Creep • Radiohead'
-  };
-
-  const upcomingQueue = [
-    { pos: '03', performer: 'Elena Vass', song: 'Flowers', artist: 'MILEY CYRUS' },
-    { pos: '04', performer: 'David K.', song: 'My Way', artist: 'FRANK SINATRA' },
-    { pos: '05', performer: 'Jessica Lane', song: 'Rolling in the Deep', artist: 'ADELE' },
-    { pos: '06', performer: 'Chris Pratt', song: 'Wonderwall', artist: 'OASIS' },
-    { pos: '07', performer: 'Sam Taylor', song: 'Stay', artist: 'JUSTIN BIEBER' },
-    { pos: '08', performer: 'Jordan B.', song: 'Superstition', artist: 'STEVIE WONDER' },
-  ];
-
-  if (!user) return null;
-
   const { time, period } = formatTime(currentTime);
+
+  if (loading) return (
+    <div className="Displayqueue" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <p style={{ color: '#fff', fontSize: '24px' }}>Loading queue...</p>
+    </div>
+  );
 
   return (
     <div className="Displayqueue">
@@ -74,7 +95,7 @@ function Displayqueue() {
           </div>
           <div className="Displayqueue-header-text">
             <h1 className="Displayqueue-app-title">
-              STUDIO 54 <span className="karaoke-text">KARAOKE</span>
+              {sessionName || 'KARAOKE'} <span className="karaoke-text">LIVE</span>
             </h1>
             <p className="Displayqueue-app-subtitle">LIVE PERFORMANCE LOUNGE</p>
           </div>
@@ -85,7 +106,7 @@ function Displayqueue() {
             <p className="Displayqueue-join-url">studiokaraoke.com/join</p>
           </div>
           <div className="Displayqueue-qr-code">
-            {/* QR code placeholder - replace with actual QR code */}
+            {/* QR code placeholder */}
             <svg viewBox="0 0 50 50" fill="black">
               <rect x="0" y="0" width="20" height="20"/>
               <rect x="30" y="0" width="20" height="20"/>
@@ -104,44 +125,71 @@ function Displayqueue() {
             {/* NOW SINGING */}
             <div className="Displayqueue-now-singing">
               <h2 className="Displayqueue-section-title">NOW SINGING</h2>
-              <div className="Displayqueue-current-singer">
-                <div className="Displayqueue-singer-avatar">
-                  <img src={currentSinger.avatar} alt={currentSinger.name} />
+              {currentSinger ? (
+                <div className="Displayqueue-current-singer">
+                  <div className="Displayqueue-singer-avatar">
+                    <span style={{ fontSize: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                      🎤
+                    </span>
+                  </div>
+                  <div className="Displayqueue-singer-details">
+                    <h3 className="Displayqueue-singer-name">{currentSinger.singerName}</h3>
+                    <p className="Displayqueue-song-title">
+                      {currentSinger.songTitle || 'Song TBA'}
+                    </p>
+                    <p className="Displayqueue-song-artist">
+                      {currentSinger.songArtist || ''}
+                    </p>
+                  </div>
+                  <div className="Displayqueue-progress-bar">
+                    <div className="Displayqueue-progress-fill" style={{ width: '50%' }} />
+                  </div>
                 </div>
-                <div className="Displayqueue-singer-details">
-                  <h3 className="Displayqueue-singer-name">{currentSinger.name}</h3>
-                  <p className="Displayqueue-song-title">{currentSinger.song}</p>
-                  <p className="Displayqueue-song-artist">{currentSinger.artist}</p>
+              ) : (
+                <div className="Displayqueue-current-singer">
+                  <div className="Displayqueue-singer-details">
+                    <h3 className="Displayqueue-singer-name">No one on stage</h3>
+                    <p className="Displayqueue-song-title">Waiting to start...</p>
+                  </div>
                 </div>
-                <div className="Displayqueue-progress-bar">
-                  <div 
-                    className="Displayqueue-progress-fill" 
-                    style={{ width: `${currentSinger.progress}%` }}
-                  ></div>
-                </div>
-              </div>
+              )}
             </div>
 
             {/* ON DECK */}
             <div className="Displayqueue-on-deck">
               <h2 className="Displayqueue-section-title-secondary">ON DECK</h2>
-              <div className="Displayqueue-on-deck-card">
-                <div className="Displayqueue-deck-position">{onDeck.position}</div>
-                <div className="Displayqueue-deck-info">
-                  <h3 className="Displayqueue-deck-name">{onDeck.name}</h3>
-                  <p className="Displayqueue-deck-songs">{onDeck.songs}</p>
+              {onDeck ? (
+                <div className="Displayqueue-on-deck-card">
+                  <div className="Displayqueue-deck-position">
+                    {String(onDeck.position).padStart(2, '0')}
+                  </div>
+                  <div className="Displayqueue-deck-info">
+                    <h3 className="Displayqueue-deck-name">{onDeck.singerName}</h3>
+                    <p className="Displayqueue-deck-songs">
+                      {onDeck.songTitle
+                        ? `${onDeck.songTitle}${onDeck.songArtist ? ` • ${onDeck.songArtist}` : ''}`
+                        : 'Song TBA'}
+                    </p>
+                  </div>
+                  <div className="Displayqueue-deck-status">WAITING</div>
                 </div>
-                <div className="Displayqueue-deck-status">WAITING</div>
-              </div>
+              ) : (
+                <div className="Displayqueue-on-deck-card">
+                  <div className="Displayqueue-deck-info">
+                    <h3 className="Displayqueue-deck-name">Queue is empty</h3>
+                  </div>
+                </div>
+              )}
             </div>
-
           </section>
 
           {/* RIGHT COLUMN */}
           <section className="Displayqueue-right-panel">
             <div className="Displayqueue-upcoming-header">
               <h2 className="Displayqueue-section-title-main">UPCOMING STARS</h2>
-              <div className="Displayqueue-queue-count">{upcomingQueue.length} IN QUEUE</div>
+              <div className="Displayqueue-queue-count">
+                {upcomingQueue.length} IN QUEUE
+              </div>
             </div>
 
             <div className="Displayqueue-queue-table">
@@ -153,19 +201,35 @@ function Displayqueue() {
               </div>
 
               <div className="Displayqueue-queue-items">
-                {upcomingQueue.map((item) => (
-                  <div key={item.pos} className="Displayqueue-queue-item">
-                    <div className="Displayqueue-item-position">{item.pos}</div>
-                    <div className="Displayqueue-item-performer">{item.performer}</div>
-                    <div className="Displayqueue-item-song">
-                      <span className="Displayqueue-item-song-name">{item.song}</span>
-                      <span className="Displayqueue-item-song-artist">{item.artist}</span>
-                    </div>
-                    <div className="Displayqueue-item-status">
-                      <span className="Displayqueue-status-badge">IN QUEUE</span>
+                {upcomingQueue.length === 0 ? (
+                  <div className="Displayqueue-queue-item">
+                    <div className="Displayqueue-item-performer" style={{ gridColumn: '1/-1', textAlign: 'center', opacity: 0.5 }}>
+                      No upcoming singers
                     </div>
                   </div>
-                ))}
+                ) : (
+                  upcomingQueue.map((item) => (
+                    <div key={item.id} className="Displayqueue-queue-item">
+                      <div className="Displayqueue-item-position">
+                        {String(item.position).padStart(2, '0')}
+                      </div>
+                      <div className="Displayqueue-item-performer">{item.singerName}</div>
+                      <div className="Displayqueue-item-song">
+                        <span className="Displayqueue-item-song-name">
+                          {item.songTitle || 'TBA'}
+                        </span>
+                        {item.songArtist && (
+                          <span className="Displayqueue-item-song-artist">
+                            {item.songArtist.toUpperCase()}
+                          </span>
+                        )}
+                      </div>
+                      <div className="Displayqueue-item-status">
+                        <span className="Displayqueue-status-badge">IN QUEUE</span>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </section>
@@ -179,14 +243,14 @@ function Displayqueue() {
             <svg className="Displayqueue-footer-icon" viewBox="0 0 20 20" fill="white">
               <path d="M10 2L3 7V13L10 18L17 13V7L10 2Z"/>
             </svg>
-            <span>NOW TRENDING: 90S POP ROCK</span>
+            <span>SESSION: {sessionName?.toUpperCase()}</span>
           </div>
           <div className="Displayqueue-footer-item">
             <svg className="Displayqueue-footer-icon" viewBox="0 0 20 20" fill="none">
               <circle cx="10" cy="10" r="8" stroke="white" strokeWidth="2"/>
               <path d="M10 6V10L13 13" stroke="white" strokeWidth="2"/>
             </svg>
-            <span>LAST SUNG: "MR. BRIGHTSIDE" BY THE KILLERS</span>
+            <span>AUTO-REFRESHES EVERY 10 SECONDS</span>
           </div>
           <div className="Displayqueue-footer-item">
             <svg className="Displayqueue-footer-icon" viewBox="0 0 20 20" fill="white">
@@ -194,7 +258,7 @@ function Displayqueue() {
               <path d="M4 10L10 13L16 10"/>
               <path d="M4 14L10 17L16 14"/>
             </svg>
-            <span>CROWD FAVORITE: "I WILL ALWAYS LOVE YOU"</span>
+            <span>{upcomingQueue.length + (onDeck ? 1 : 0)} SINGERS WAITING</span>
           </div>
         </div>
         <div className="Displayqueue-footer-right">

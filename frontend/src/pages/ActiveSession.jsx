@@ -144,7 +144,7 @@ function ActiveSession() {
             </button>
             <button
               className="as-display-btn"
-              onClick={() => window.open('/displayqueue', '_blank', 'noopener,noreferrer')}
+              onClick={() => window.open(`/displayqueue?sessionId=${id}`, '_blank', 'noopener,noreferrer')}
             >
               📺 Display Queue
             </button>

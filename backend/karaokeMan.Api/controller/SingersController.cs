@@ -117,8 +117,54 @@ namespace KaraokeMan.Api.Controllers
 
             return Ok(singers);
         }
-
         
+        // POST /api/sessions/{sessionId}/singers
+        [HttpPost("/api/sessions/{sessionId}/singers")]
+        [Authorize]
+        public async Task<ActionResult> AddSingerToSession(int sessionId, [FromBody] CreateSingerDto dto)
+        {
+            var session = await _context.Sessions.FindAsync(sessionId);
+            if (session == null)
+                return NotFound(new { message = "Session not found" });
+
+            if (!session.IsActive)
+                return BadRequest(new { message = "Session is no longer active" });
+
+            // Create a new singer every time — no uniqueness check
+            var singer = new Singer { Name = dto.Name };
+            _context.Singers.Add(singer);
+            await _context.SaveChangesAsync();
+
+            // Get next position in queue
+            var nextPosition = await _context.QueueItems
+                .Where(q => q.SessionId == sessionId)
+                .MaxAsync(q => (int?)q.Position) ?? 0;
+            nextPosition++;
+
+            // Create the queue item linking singer to session
+            var queueItem = new QueueItem
+            {
+                SessionId = sessionId,
+                SingerId = singer.Id,
+                Position = nextPosition,
+                Status = "waiting"
+            };
+
+            _context.QueueItems.Add(queueItem);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                singer = new { singer.Id, singer.Name },
+                queueItem = new
+                {
+                    queueItem.Id,
+                    queueItem.Position,
+                    queueItem.Status
+                }
+            });
+        }
+            
 
         // DELETE /api/sessions/{sessionId}/singers/{singerId}
         [HttpDelete("/api/sessions/{sessionId}/singers/{singerId}")]
