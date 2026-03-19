@@ -159,6 +159,7 @@ function ActiveSession() {
           {/* LEFT — CURRENT SINGER */}
           <section className="as-left">
             <h2 className="as-section-title">🎙 Current Singer</h2>
+            
             <div className="as-stage-card">
               <div className="as-stage-visual">
                 <div className="as-stage-overlay" />

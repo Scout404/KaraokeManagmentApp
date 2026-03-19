@@ -119,6 +119,58 @@ namespace KaraokeMan.Api.Controllers
         }
         
         // POST /api/sessions/{sessionId}/singers
+        // POST /api/sessions/{sessionId}/singers/{singerId}/readd
+        [HttpPost("/api/sessions/{sessionId}/singers/{singerId}/readd")]
+        [Authorize]
+        public async Task<ActionResult> ReAddSingerToQueue(int sessionId, int singerId)
+        {
+            var session = await _context.Sessions.FindAsync(sessionId);
+            if (session == null)
+                return NotFound(new { message = "Session not found" });
+
+            if (!session.IsActive)
+                return BadRequest(new { message = "Session is no longer active" });
+
+            var singer = await _context.Singers.FindAsync(singerId);
+            if (singer == null)
+                return NotFound(new { message = "Singer not found" });
+
+            // Check singer belongs to this session
+            var existsInSession = await _context.QueueItems
+                .AnyAsync(q => q.SessionId == sessionId && q.SingerId == singerId);
+            if (!existsInSession)
+                return BadRequest(new { message = "Singer does not belong to this session" });
+
+            // Check not already waiting
+            var alreadyWaiting = await _context.QueueItems
+                .AnyAsync(q => q.SessionId == sessionId && q.SingerId == singerId && q.Status == "waiting");
+            if (alreadyWaiting)
+                return BadRequest(new { message = "Singer is already in the queue" });
+
+            var nextPosition = await _context.QueueItems
+                .Where(q => q.SessionId == sessionId)
+                .MaxAsync(q => (int?)q.Position) ?? 0;
+            nextPosition++;
+
+            var queueItem = new QueueItem
+            {
+                SessionId = sessionId,
+                SingerId = singerId,
+                Position = nextPosition,
+                Status = "waiting"
+            };
+
+            _context.QueueItems.Add(queueItem);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Singer re-added to queue",
+                queueItem = new { queueItem.Id, queueItem.Position, queueItem.Status }
+            });
+        }
+
+        // POST /api/sessions/{sessionId}/singers
         [HttpPost("/api/sessions/{sessionId}/singers")]
         [Authorize]
         public async Task<ActionResult> AddSingerToSession(int sessionId, [FromBody] CreateSingerDto dto)
@@ -130,18 +182,15 @@ namespace KaraokeMan.Api.Controllers
             if (!session.IsActive)
                 return BadRequest(new { message = "Session is no longer active" });
 
-            // Create a new singer every time — no uniqueness check
             var singer = new Singer { Name = dto.Name };
             _context.Singers.Add(singer);
             await _context.SaveChangesAsync();
 
-            // Get next position in queue
             var nextPosition = await _context.QueueItems
                 .Where(q => q.SessionId == sessionId)
                 .MaxAsync(q => (int?)q.Position) ?? 0;
             nextPosition++;
 
-            // Create the queue item linking singer to session
             var queueItem = new QueueItem
             {
                 SessionId = sessionId,
@@ -156,12 +205,7 @@ namespace KaraokeMan.Api.Controllers
             return Ok(new
             {
                 singer = new { singer.Id, singer.Name },
-                queueItem = new
-                {
-                    queueItem.Id,
-                    queueItem.Position,
-                    queueItem.Status
-                }
+                queueItem = new { queueItem.Id, queueItem.Position, queueItem.Status }
             });
         }
             

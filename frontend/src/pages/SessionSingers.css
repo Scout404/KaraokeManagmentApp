@@ -194,6 +194,16 @@
 
 .ss-btn--remove:hover { background: rgba(239, 68, 68, 0.2); }
 
+.ss-btn--readd {
+  background: rgba(200, 19, 236, 0.1);
+  color: #c813ec;
+  border: 1px solid rgba(200, 19, 236, 0.2);
+}
+
+.ss-btn--readd:hover {
+  background: rgba(200, 19, 236, 0.2);
+}
+
 /* ── EXPANDED SONGS ── */
 .ss-expanded {
   background: #150d1a;

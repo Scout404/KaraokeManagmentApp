@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
 import { sessionService } from '../services/sessionService';
-import { singerService } from '../services/singerService';
 import api from '../services/api';
 import './SessionSingers.css';
 
@@ -42,6 +41,16 @@ function SessionSingers() {
       setError('Failed to load session singers');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Add this handler with the others:
+  const handleReAddSinger = async (singerId) => {
+    try {
+      await sessionService.reAddSingerToQueue(id, singerId);
+      loadData();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to re-add singer');
     }
   };
 
@@ -150,6 +159,7 @@ function SessionSingers() {
                   <span className="ss-row-songs">
                     {singer.songsSung.length} song{singer.songsSung.length !== 1 ? 's' : ''}
                   </span>
+                  {/* Replace the existing ss-row-actions span with this: */}
                   <span className="ss-row-actions" onClick={e => e.stopPropagation()}>
                     <button
                       className="ss-btn ss-btn--expand"
@@ -159,6 +169,14 @@ function SessionSingers() {
                     >
                       {expandedSinger === singer.id ? '▲ Hide' : '▼ Songs'}
                     </button>
+                    {singer.currentStatus !== 'waiting' && singer.currentStatus !== 'singing' && (
+                      <button
+                        className="ss-btn ss-btn--readd"
+                        onClick={() => handleReAddSinger(singer.id)}
+                      >
+                        ↩ Re-add
+                      </button>
+                    )}
                     <button
                       className="ss-btn ss-btn--remove"
                       onClick={() => handleRemoveSinger(singer.id, singer.name)}
