@@ -32,6 +32,7 @@ namespace KaraokeMan.Api.Controllers
                     s.StartedAt,
                     s.EndedAt,
                     s.IsActive,
+                    s.CurrentRound,
                     SingerCount = s.QueueItems.Select(q => q.SingerId).Distinct().Count()
                 })
                 .ToListAsync();
@@ -54,6 +55,7 @@ namespace KaraokeMan.Api.Controllers
                     s.StartedAt,
                     s.EndedAt,
                     s.IsActive,
+                    s.CurrentRound,
                     SingerCount = s.QueueItems.Select(q => q.SingerId).Distinct().Count()
                 })
                 .FirstOrDefaultAsync();

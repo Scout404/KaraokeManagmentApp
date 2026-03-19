@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
 import { sessionService } from '../services/sessionService';
@@ -16,8 +16,10 @@ function SessionSingers() {
   const [error, setError] = useState('');
   const [expandedSinger, setExpandedSinger] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
   const [newSingerName, setNewSingerName] = useState('');
   const [addError, setAddError] = useState('');
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -25,6 +27,17 @@ function SessionSingers() {
     setUser(JSON.parse(storedUser));
     loadData();
   }, [id]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setOpenDropdown(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const loadData = async () => {
     try {
@@ -44,13 +57,22 @@ function SessionSingers() {
     }
   };
 
-  // Add this handler with the others:
   const handleReAddSinger = async (singerId) => {
     try {
       await sessionService.reAddSingerToQueue(id, singerId);
+      setOpenDropdown(null);
       loadData();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to re-add singer');
+    }
+  };
+
+  const handleToggleSkip = async (singerId, currentlySkipping) => {
+    try {
+      await sessionService.toggleSkipRound(id, singerId);
+      loadData();
+    } catch (err) {
+      setError('Failed to update skip status');
     }
   };
 
@@ -58,24 +80,25 @@ function SessionSingers() {
     if (!window.confirm(`Remove ${singerName} from this session?`)) return;
     try {
       await sessionService.removeSingerFromSession(id, singerId);
+      setOpenDropdown(null);
       loadData();
     } catch (err) {
       setError('Failed to remove singer');
     }
   };
 
-    const handleAddSinger = async () => {
+  const handleAddSinger = async () => {
     if (!newSingerName.trim()) return;
     try {
-        setAddError('');
-        await api.post(`/sessions/${id}/singers`, { name: newSingerName });
-        setShowAddModal(false);
-        setNewSingerName('');
-        loadData();
+      setAddError('');
+      await api.post(`/sessions/${id}/singers`, { name: newSingerName });
+      setShowAddModal(false);
+      setNewSingerName('');
+      loadData();
     } catch (err) {
-        setAddError(err.response?.data?.message || 'Failed to add singer');
+      setAddError(err.response?.data?.message || 'Failed to add singer');
     }
-    };
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('user');
@@ -152,15 +175,32 @@ function SessionSingers() {
                     </span>
                     {singer.name}
                   </span>
-                  <span>{getStatusBadge(singer.currentStatus)}</span>
+                  {/* <span>{getStatusBadge(singer.currentStatus)}</span> */}
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                    {getStatusBadge(singer.currentStatus)}
+                    {singer.skipNextRound && (
+                      <span style={{
+                        fontSize: '11px',
+                        color: '#f87171',
+                        background: 'rgba(239,68,68,0.1)',
+                        border: '1px solid rgba(239,68,68,0.2)',
+                        padding: '2px 8px',
+                        borderRadius: '999px',
+                      }}>
+                        ⏭ Skipping
+                      </span>
+                    )}
+                  </span>
                   <span className="ss-row-pos">
                     {singer.queuePosition ? `#${singer.queuePosition}` : '—'}
                   </span>
                   <span className="ss-row-songs">
                     {singer.songsSung.length} song{singer.songsSung.length !== 1 ? 's' : ''}
                   </span>
-                  {/* Replace the existing ss-row-actions span with this: */}
+
+                  {/* ACTIONS: Songs button + dropdown for the rest */}
                   <span className="ss-row-actions" onClick={e => e.stopPropagation()}>
+                    {/* Songs toggle — stays as a normal button */}
                     <button
                       className="ss-btn ss-btn--expand"
                       onClick={() =>
@@ -169,20 +209,50 @@ function SessionSingers() {
                     >
                       {expandedSinger === singer.id ? '▲ Hide' : '▼ Songs'}
                     </button>
-                    {singer.currentStatus !== 'waiting' && singer.currentStatus !== 'singing' && (
-                      <button
-                        className="ss-btn ss-btn--readd"
-                        onClick={() => handleReAddSinger(singer.id)}
-                      >
-                        ↩ Re-add
-                      </button>
-                    )}
-                    <button
-                      className="ss-btn ss-btn--remove"
-                      onClick={() => handleRemoveSinger(singer.id, singer.name)}
+
+                    {/* More actions dropdown */}
+                    <div
+                      className="ss-dropdown-wrapper"
+                      ref={openDropdown === singer.id ? dropdownRef : null}
                     >
-                      Remove
-                    </button>
+                      <button
+                        className="ss-btn ss-btn--more"
+                        onClick={() =>
+                          setOpenDropdown(openDropdown === singer.id ? null : singer.id)
+                        }
+                        aria-label="More actions"
+                        title="More actions"
+                      >
+                        ...
+                      </button>
+
+                      {openDropdown === singer.id && (
+                        <div className="ss-dropdown-menu">
+                          {singer.currentStatus !== 'waiting' && singer.currentStatus !== 'singing' && (
+                            <button
+                              className="ss-dropdown-item ss-dropdown-item--readd"
+                              onClick={() => handleReAddSinger(singer.id)}
+                            >
+                              ↩ Re-add to Queue
+                            </button>
+                          )}
+                          {singer.currentStatus !== 'singing' && (
+                            <button
+                              className="ss-dropdown-item ss-dropdown-item--skip"
+                              onClick={() => handleToggleSkip(singer.id, singer.skipNextRound)}
+                              >
+                              {singer.skipNextRound ? '▶ Join Next Round' : '⏭ Skip Next Round'}
+                            </button>
+                          )}
+                          <button
+                            className="ss-dropdown-item ss-dropdown-item--remove"
+                            onClick={() => handleRemoveSinger(singer.id, singer.name)}
+                          >
+                            🗑 Remove Singer
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </span>
                 </div>
 

@@ -19,6 +19,14 @@ function ActiveSession() {
   const [newSingerName, setNewSingerName] = useState('');
   const [addSingerError, setAddSingerError] = useState('');
 
+  const [showYoutubeLinkModal, setShowYoutubeLinkModal] = useState(false);
+  const [youtubeLinkTarget, setYoutubeLinkTarget] = useState(null);
+  const [youtubeLinkValue, setYoutubeLinkValue] = useState('');
+  const [youtubeLinkError, setYoutubeLinkError] = useState('');
+  // Add these near your other YouTube link state
+  const [youtubeLinkTitle, setYoutubeLinkTitle] = useState('');
+  const [youtubeLinkArtist, setYoutubeLinkArtist] = useState('');
+
   const currentSinger = queue.find(q => q.status === 'singing');
   const upNext = queue.filter(q => q.status === 'waiting');
 
@@ -69,6 +77,17 @@ function ActiveSession() {
     }
   };
 
+  const handleNextRound = async () => {
+    if (!window.confirm(`Start Round ${(session.currentRound ?? 1) + 1}?`)) return;
+    try {
+      await sessionService.startNextRound(id);
+      loadData();
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Failed to start next round';
+      setError(msg);
+    }
+  };
+
   const handleRemoveFromQueue = async (queueItemId) => {
     try {
       await api.delete(`/queue/${queueItemId}`);
@@ -111,6 +130,56 @@ function ActiveSession() {
     return h > 0 ? `${h}h ${m}m elapsed` : `${m}m elapsed`;
   };
 
+const handleSaveYoutubeLink = async () => {
+  if (!youtubeLinkValue.trim()) return;
+  try {
+    setYoutubeLinkError('');
+
+    // Step 1: Create the song
+    const songRes = await api.post('/songs', {
+      title: youtubeLinkTitle.trim() || 'Unknown',
+      artist: youtubeLinkArtist.trim() || '',
+      link: youtubeLinkValue.trim(),
+    });
+    const songId = songRes.data.song.id;
+
+    // Step 2: Assign song to queue item
+    await api.patch(`/queue/${youtubeLinkTarget.id}/song`, { songId });
+
+    setShowYoutubeLinkModal(false);
+    setYoutubeLinkValue('');
+    setYoutubeLinkTitle('');
+    setYoutubeLinkArtist('');
+    setYoutubeLinkTarget(null);
+    loadData();
+  } catch (err) {
+    setYoutubeLinkError(err.response?.data?.message || 'Failed to save link');
+  }
+};
+
+  const handleYoutubePaste = async (url) => {
+  setYoutubeLinkValue(url);
+  if (!url.includes('youtube.com') && !url.includes('youtu.be')) return;
+  try {
+    const res = await fetch(
+      `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`
+    );
+    if (!res.ok) return;
+    const data = await res.json();
+
+    // Try to split "Artist - Title" format
+    const parts = data.title.split(' - ');
+    if (parts.length >= 2) {
+      setYoutubeLinkArtist(parts[0].trim());
+      setYoutubeLinkTitle(parts.slice(1).join(' - ').trim());
+    } else {
+      setYoutubeLinkTitle(data.title);
+    }
+  } catch {
+    // silently fail — user can fill in manually
+  }
+};
+
   if (loading) return <div className="as-loading">Loading session...</div>;
   if (error) return <div className="as-loading">{error}</div>;
   if (!user || !session) return null;
@@ -132,11 +201,23 @@ function ActiveSession() {
               {session.roomName && ` — ${session.roomName}`}
             </div>
             <p className="as-status-sub">
-              {session.singerCount} singers · {formatElapsed(session.startedAt)}
+              {session.singerCount} singers · {formatElapsed(session.startedAt)} · 
+              <span style={{ color: '#c813ec', fontWeight: 700 }}>
+                {' '}Round {session.currentRound ?? 1}
+              </span>
             </p>
           </div>
           <div style={{ display: 'flex', gap: '10px' }}>
-            <button  // ← ADD THIS
+            {upNext.length === 0 && !currentSinger && (
+              <button
+                className="as-display-btn"
+                style={{ borderColor: '#c813ec', color: '#c813ec' }}
+                onClick={handleNextRound}
+              >
+                🔄 Next Round
+              </button>
+            )}
+            <button
               className="as-display-btn"
               onClick={() => setShowAddSingerModal(true)}
             >
@@ -159,7 +240,7 @@ function ActiveSession() {
           {/* LEFT — CURRENT SINGER */}
           <section className="as-left">
             <h2 className="as-section-title">🎙 Current Singer</h2>
-            
+
             <div className="as-stage-card">
               <div className="as-stage-visual">
                 <div className="as-stage-overlay" />
@@ -267,7 +348,22 @@ function ActiveSession() {
                         </div>
                       </div>
                       <div className="as-queue-actions">
-                        {item.link && <button className="as-yt-btn">🔗</button>}
+                        {/* FIX: show Add YouTube Link button only when no link exists */}
+                        {!item.link && (
+                          <button
+                            className="as-add-link-btn"
+                            onClick={() => {
+                              setYoutubeLinkTarget(item);
+                              setYoutubeLinkValue('');
+                              setYoutubeLinkTitle('');   // add this
+                              setYoutubeLinkArtist('');  // add this
+                              setYoutubeLinkError('');
+                              setShowYoutubeLinkModal(true);
+                            }}
+                          >
+                            🔗 Add YouTube Link
+                          </button>
+                        )}
                         <button
                           className="as-delete-btn"
                           onClick={() => handleRemoveFromQueue(item.id)}
@@ -276,7 +372,8 @@ function ActiveSession() {
                         </button>
                       </div>
                     </div>
-                    {item.link ? (
+                    {/* FIX: only show yt-row when link exists, no dead button */}
+                    {item.link && (
                       <div className="as-yt-row">
                         <span className="as-yt-icon">▶</span>
                         <span className="as-yt-url">{item.link.slice(0, 45)}...</span>
@@ -289,8 +386,6 @@ function ActiveSession() {
                           Open
                         </a>
                       </div>
-                    ) : (
-                      <button className="as-add-link-btn">🔗 Add YouTube Link</button>
                     )}
                   </div>
                 ))
@@ -306,78 +401,170 @@ function ActiveSession() {
           </section>
         </div>
       </div>
+
       {/* QUICK ADD SINGER MODAL */}
       {showAddSingerModal && (
-      <div
-        style={{
-          position: 'fixed', inset: 0,
-          background: 'rgba(0,0,0,0.6)',
-          backdropFilter: 'blur(4px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          zIndex: 1000,
-        }}
-        onClick={() => setShowAddSingerModal(false)}
-      >
         <div
           style={{
-            background: '#2f1933',
-            border: '1px solid #422348',
-            borderRadius: '16px',
-            width: '90%',
-            maxWidth: '420px',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+            position: 'fixed', inset: 0,
+            background: 'rgba(0,0,0,0.6)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 1000,
           }}
-          onClick={e => e.stopPropagation()}
+          onClick={() => setShowAddSingerModal(false)}
         >
-          <div style={{
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            padding: '20px 24px', borderBottom: '1px solid #422348',
-          }}>
-            <h2 style={{ margin: 0, fontSize: '18px', color: '#fff' }}>
-              Add Singer to Queue
-            </h2>
-            <button
-              onClick={() => setShowAddSingerModal(false)}
-              style={{ background: 'none', border: 'none', fontSize: '24px', color: '#c092c9', cursor: 'pointer' }}
-            >×</button>
+          <div
+            style={{
+              background: '#2f1933',
+              border: '1px solid #422348',
+              borderRadius: '16px',
+              width: '90%',
+              maxWidth: '420px',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              padding: '20px 24px', borderBottom: '1px solid #422348',
+            }}>
+              <h2 style={{ margin: 0, fontSize: '18px', color: '#fff' }}>
+                Add Singer to Queue
+              </h2>
+              <button
+                onClick={() => setShowAddSingerModal(false)}
+                style={{ background: 'none', border: 'none', fontSize: '24px', color: '#c092c9', cursor: 'pointer' }}
+              >×</button>
+            </div>
+            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <label style={{ fontSize: '13px', color: '#c092c9' }}>Singer Name</label>
+              <input
+                className="as-search"
+                style={{
+                  background: '#1f1022', border: '1px solid #422348',
+                  borderRadius: '8px', padding: '10px 14px',
+                  color: '#f1f0f2', fontSize: '14px', outline: 'none', width: '100%',
+                  boxSizing: 'border-box',
+                }}
+                placeholder="e.g. John Smith"
+                value={newSingerName}
+                onChange={e => setNewSingerName(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleQuickAddSinger()}
+                autoFocus
+              />
+              {addSingerError && (
+                <p style={{ color: '#f87171', fontSize: '13px', margin: 0 }}>{addSingerError}</p>
+              )}
+              <button
+                className="as-action-btn as-action-btn--primary"
+                style={{ padding: '12px', justifyContent: 'center' }}
+                onClick={handleQuickAddSinger}
+              >
+                🎤 Add Singer
+              </button>
+              <button
+                className="as-action-btn as-action-btn--secondary"
+                style={{ padding: '10px', justifyContent: 'center', fontSize: '13px' }}
+                onClick={() => { setShowAddSingerModal(false); navigate(`/session/${id}/singers`); }}
+              >
+                View All Singers →
+              </button>
+            </div>
           </div>
-          <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <label style={{ fontSize: '13px', color: '#c092c9' }}>Singer Name</label>
-            <input
-              className="as-search"
-              style={{
-                background: '#1f1022', border: '1px solid #422348',
-                borderRadius: '8px', padding: '10px 14px',
-                color: '#f1f0f2', fontSize: '14px', outline: 'none', width: '100%',
-                boxSizing: 'border-box',
-              }}
-              placeholder="e.g. John Smith"
-              value={newSingerName}
-              onChange={e => setNewSingerName(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleQuickAddSinger()}
-              autoFocus
-            />
-            {addSingerError && (
-              <p style={{ color: '#f87171', fontSize: '13px', margin: 0 }}>{addSingerError}</p>
-            )}
-            <button
-              className="as-action-btn as-action-btn--primary"
-              style={{ padding: '12px', justifyContent: 'center' }}
-              onClick={handleQuickAddSinger}
-            >
-              🎤 Add Singer
-            </button>
-            <button
-              className="as-action-btn as-action-btn--secondary"
-              style={{ padding: '10px', justifyContent: 'center', fontSize: '13px' }}
-              onClick={() => { setShowAddSingerModal(false); navigate(`/session/${id}/singers`); }}
-            >
-          View All Singers →
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+        </div>
+      )}
+
+      {/* YOUTUBE LINK MODAL */}
+      {showYoutubeLinkModal && (
+        <div
+          style={{
+            position: 'fixed', inset: 0,
+            background: 'rgba(0,0,0,0.6)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 1000,
+          }}
+          onClick={() => setShowYoutubeLinkModal(false)}
+        >
+          <div
+            style={{
+              background: '#2f1933', border: '1px solid #422348',
+              borderRadius: '16px', width: '90%', maxWidth: '420px',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              padding: '20px 24px', borderBottom: '1px solid #422348',
+            }}>
+              <h2 style={{ margin: 0, fontSize: '18px', color: '#fff' }}>
+                Add YouTube Link — {youtubeLinkTarget?.singerName}
+              </h2>
+              <button
+                onClick={() => setShowYoutubeLinkModal(false)}
+                style={{ background: 'none', border: 'none', fontSize: '24px', color: '#c092c9', cursor: 'pointer' }}
+              >×</button>
+            </div>
+            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+
+  <label style={{ fontSize: '13px', color: '#c092c9' }}>YouTube URL</label>
+  <input
+    style={{
+      background: '#1f1022', border: '1px solid #422348',
+      borderRadius: '8px', padding: '10px 14px',
+      color: '#f1f0f2', fontSize: '14px', outline: 'none', width: '100%',
+      boxSizing: 'border-box',
+    }}
+    placeholder="https://youtube.com/watch?v=..."
+    value={youtubeLinkValue}
+    onChange={e => handleYoutubePaste(e.target.value)}
+    onKeyDown={e => e.key === 'Enter' && handleSaveYoutubeLink()}
+    autoFocus
+  />
+
+  <label style={{ fontSize: '13px', color: '#c092c9' }}>Song Title</label>
+  <input
+    style={{
+      background: '#1f1022', border: '1px solid #422348',
+      borderRadius: '8px', padding: '10px 14px',
+      color: '#f1f0f2', fontSize: '14px', outline: 'none', width: '100%',
+      boxSizing: 'border-box',
+    }}
+    placeholder="e.g. Bohemian Rhapsody (auto-filled)"
+    value={youtubeLinkTitle}
+    onChange={e => setYoutubeLinkTitle(e.target.value)}
+  />
+
+  <label style={{ fontSize: '13px', color: '#c092c9' }}>Artist</label>
+  <input
+    style={{
+      background: '#1f1022', border: '1px solid #422348',
+      borderRadius: '8px', padding: '10px 14px',
+      color: '#f1f0f2', fontSize: '14px', outline: 'none', width: '100%',
+      boxSizing: 'border-box',
+    }}
+    placeholder="e.g. Queen (auto-filled)"
+    value={youtubeLinkArtist}
+    onChange={e => setYoutubeLinkArtist(e.target.value)}
+  />
+
+  {youtubeLinkError && (
+    <p style={{ color: '#f87171', fontSize: '13px', margin: 0 }}>{youtubeLinkError}</p>
+  )}
+
+  <button
+    className="as-action-btn as-action-btn--primary"
+    style={{ padding: '12px', justifyContent: 'center' }}
+    onClick={handleSaveYoutubeLink}
+  >
+    🔗 Save Link
+  </button>
+</div>
+          </div>
+        </div>
+      )}
     </AppLayout>
   );
 }
