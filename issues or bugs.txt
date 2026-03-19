@@ -1,0 +1,5 @@
+BUGS
+
+Active Session page:
+- when session is started and singer are added there to the queue list but i cant add them back when the all singers had song their song.
+- que positin is not being updated(example 5 singers. 1 is on stage 4 in queue but de queue number does not update.)

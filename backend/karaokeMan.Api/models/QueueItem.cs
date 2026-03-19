@@ -29,6 +29,17 @@ namespace KaraokeMan.Api.Models
         [MaxLength(20)]
         public string Status { get; set; } = "waiting"; // "waiting", "singing", "completed"
         
+        public int Round { get; set; } = 1;
+        
+        public bool SkipNextRound { get; set; } = false;
+        
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
+}
+
+enum QueueItemStatus
+{
+    Waiting,
+    Singing,
+    Completed
 }

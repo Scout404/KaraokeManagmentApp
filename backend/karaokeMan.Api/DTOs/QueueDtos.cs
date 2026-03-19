@@ -23,6 +23,7 @@ namespace KaraokeMan.Api.DTOs
         public string? SongTitle { get; set; }
         public string? SongArtist { get; set; }
         public string? SongLink { get; set; }
+        public int Round { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 

@@ -185,6 +185,7 @@ namespace KaraokeMan.Api.Services
                 SongTitle = item.Song?.Title,
                 SongArtist = item.Song?.Artist,
                 SongLink = item.Song?.Link,
+                Round = item.Round,
                 CreatedAt = item.CreatedAt
             };
         }
