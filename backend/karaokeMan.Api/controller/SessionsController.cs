@@ -219,14 +219,15 @@ namespace KaraokeMan.Api.Controllers
         if (session == null)
             return NotFound(new { message = "Session not found" });
 
-        // Find the singer's latest queue item in this session
+        // Find the singer's active queue item in this session
         var queueItem = await _context.QueueItems
-            .Where(q => q.SessionId == sessionId && q.SingerId == singerId)
-            .OrderByDescending(q => q.Position)
+            .Where(q => q.SessionId == sessionId && q.SingerId == singerId &&
+                        (q.Status == "waiting" || q.Status == "singing"))
+            .OrderBy(q => q.Position)
             .FirstOrDefaultAsync();
 
         if (queueItem == null)
-            return NotFound(new { message = "Singer not found in this session" });
+            return NotFound(new { message = "Singer is not active in this session's queue" });
 
         // Toggle skip
         queueItem.SkipNextRound = !queueItem.SkipNextRound;

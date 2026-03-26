@@ -98,10 +98,9 @@ namespace KaraokeMan.Api.Controllers
                         .OrderBy(q => q.Position)
                         .Select(q => (int?)q.Position)
                         .FirstOrDefault(),
-                    CurrentStatus = g
-                        .OrderBy(q => q.Position)
-                        .Select(q => q.Status)
-                        .FirstOrDefault(),
+                    CurrentStatus = g.Any(q => q.Status == "singing") ? "singing" :
+                                    g.Any(q => q.Status == "waiting") ? "waiting" : "completed",
+                    SkipNextRound = g.Any(q => q.SkipNextRound && (q.Status == "waiting" || q.Status == "singing")),
                     SongsSung = g
                         .Where(q => q.Status == "completed")
                         .Select(q => new
