@@ -19,6 +19,7 @@ namespace KaraokeMan.Api.Models
         public DateTime? EndedAt { get; set; }
         
         public bool IsActive { get; set; } = true;
+        public int CurrentRound { get; set; } = 1;
         
         // Navigation property
         public ICollection<QueueItem> QueueItems { get; set; } = new List<QueueItem>();

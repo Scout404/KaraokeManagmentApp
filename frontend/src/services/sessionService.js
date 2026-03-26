@@ -40,9 +40,24 @@ export const sessionService = {
   const response = await api.patch(`/queue/${queueItemId}/song`, { songId });
     return response.data;
   },
+  
+  reAddSingerToQueue: async (sessionId, singerId) => {
+  const response = await api.post(`/sessions/${sessionId}/singers/${singerId}/readd`);
+  return response.data;
+},
 
   searchSongs: async (query) => {
     const response = await api.get(`/songs/search?q=${encodeURIComponent(query)}`);
     return response.data.songs;
   },
+
+  startNextRound: async (sessionId) => {
+  const response = await api.post(`/sessions/${sessionId}/nextround`);
+  return response.data;
+},
+
+toggleSkipRound: async (sessionId, singerId) => {
+  const response = await api.patch(`/sessions/${sessionId}/singers/${singerId}/skipround`);
+  return response.data;
+},
 };

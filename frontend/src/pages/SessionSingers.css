@@ -67,7 +67,7 @@
 .ss-table {
   border: 1px solid #422348;
   border-radius: 12px;
-  overflow: hidden;
+  /* REMOVED overflow: hidden — it was clipping the dropdown */
 }
 
 .ss-table-head,
@@ -88,6 +88,8 @@
   text-transform: uppercase;
   letter-spacing: 0.06em;
   border-bottom: 1px solid #422348;
+  /* Keep rounded corners on the header */
+  border-radius: 12px 12px 0 0;
 }
 
 .ss-row {
@@ -96,6 +98,9 @@
   cursor: pointer;
   transition: background 0.15s;
   color: #f1f0f2;
+  /* Must be visible so the dropdown escapes */
+  overflow: visible;
+  position: relative;
 }
 
 .ss-row:hover { background: #2a1535; }
@@ -163,6 +168,9 @@
 .ss-row-actions {
   display: flex;
   gap: 6px;
+  /* Must be visible so dropdown isn't clipped */
+  overflow: visible;
+  position: relative;
 }
 
 .ss-btn {
@@ -193,6 +201,16 @@
 }
 
 .ss-btn--remove:hover { background: rgba(239, 68, 68, 0.2); }
+
+.ss-btn--readd {
+  background: rgba(200, 19, 236, 0.1);
+  color: #c813ec;
+  border: 1px solid rgba(200, 19, 236, 0.2);
+}
+
+.ss-btn--readd:hover {
+  background: rgba(200, 19, 236, 0.2);
+}
 
 /* ── EXPANDED SONGS ── */
 .ss-expanded {
@@ -331,4 +349,90 @@
 .ss-muted {
   color: #c092c9;
   font-size: 14px;
+}
+
+/* ── DROPDOWN ── */
+.ss-dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.ss-btn--more {
+  min-width: 32px;
+  padding: 4px 8px;
+  font-size: 18px;
+  line-height: 1;
+  letter-spacing: 1px;
+  background: #2f1933;
+  border: 1px solid #422348;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #c092c9;
+  transition: background 0.15s, color 0.15s;
+}
+
+.ss-btn--more:hover {
+  background: #3d1f45;
+  color: #fff;
+  border-color: #c813ec;
+}
+
+.ss-dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  /* High z-index so it floats above all rows */
+  z-index: 9999;
+  min-width: 170px;
+  background: #2f1933;
+  border: 1px solid #422348;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  animation: ss-dropdown-in 0.12s ease;
+}
+
+@keyframes ss-dropdown-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ss-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  transition: background 0.1s;
+  white-space: nowrap;
+}
+
+.ss-dropdown-item--readd {
+  color: #c813ec;
+}
+
+.ss-dropdown-item--readd:hover {
+  background: rgba(200, 19, 236, 0.12);
+}
+
+.ss-dropdown-item--remove {
+  color: #f87171;
+}
+
+.ss-dropdown-item--remove:hover {
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.ss-dropdown-item--skip {
+  color: #eab308;
+}
+
+.ss-dropdown-item--skip:hover {
+  background: rgba(234, 179, 8, 0.12);
 }
