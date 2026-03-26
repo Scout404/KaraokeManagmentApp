@@ -214,23 +214,23 @@ const handleSaveYoutubeLink = async () => {
                 style={{ borderColor: '#c813ec', color: '#c813ec' }}
                 onClick={handleNextRound}
               >
-                🔄 Next Round
+                Next Round
               </button>
             )}
             <button
               className="as-display-btn"
               onClick={() => setShowAddSingerModal(true)}
             >
-              🎤 Add Singer
+              Add Singer
             </button>
             <button
               className="as-display-btn"
               onClick={() => window.open(`/displayqueue?sessionId=${id}`, '_blank', 'noopener,noreferrer')}
             >
-              📺 Display Queue
+              Display Queue
             </button>
             <button className="as-end-btn" onClick={handleEndSession}>
-              ⏹ Close Session
+              Close Session
             </button>
           </div>
         </div>
