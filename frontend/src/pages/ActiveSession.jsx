@@ -344,7 +344,7 @@ const handleSaveYoutubeLink = async () => {
                               setShowYoutubeLinkModal(true);
                             }}
                           >
-                            🔗 Add YouTube Link
+                            Add YouTube Link
                           </button>
                         )}
                         <button
@@ -542,7 +542,7 @@ const handleSaveYoutubeLink = async () => {
     style={{ padding: '12px', justifyContent: 'center' }}
     onClick={handleSaveYoutubeLink}
   >
-    🔗 Save Link
+    Save Link
   </button>
 </div>
           </div>
