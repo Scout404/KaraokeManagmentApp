@@ -267,23 +267,14 @@ const handleSaveYoutubeLink = async () => {
                   <div className="as-stage-footer-left">
                     <div className="as-stage-meta-item">
                       <span className="as-meta-label">YouTube</span>
-                      {currentSinger.link ? (
+                      {currentSinger.songLink ? (
                         <a
-                          href={currentSinger.link}
+                          href={currentSinger.songLink}
                           target="_blank"
                           rel="noreferrer"
                           className="as-yt-link"
                         >
-                          {currentSinger.link.slice(0, 40)}...
-                        </a>
-                      ) : currentSinger.youtubeUrl ? (
-                        <a
-                          href={currentSinger.youtubeUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="as-yt-link"
-                        >
-                          {currentSinger.youtubeUrl.slice(0, 40)}...
+                          {currentSinger.songLink.slice(0, 40)}...
                         </a>
                       ) : (
                         <span className="as-yt-missing">No link added</span>
@@ -297,18 +288,10 @@ const handleSaveYoutubeLink = async () => {
                     >
                       ⏭ Next Singer
                     </button>
-                    {currentSinger.link && (
+                    {currentSinger.songLink && (
                       <button
                         className="as-action-btn as-action-btn--primary"
-                        onClick={() => window.open(currentSinger.link, '_blank')}
-                      >
-                        ▶ Open YouTube
-                      </button>
-                    )}
-                    {currentSinger.youtubeUrl && (
-                      <button
-                        className="as-action-btn as-action-btn--primary"
-                        onClick={() => window.open(currentSinger.youtubeUrl, '_blank')}
+                        onClick={() => window.open(currentSinger.songLink, '_blank')}
                       >
                         ▶ Open YouTube
                       </button>
@@ -349,7 +332,7 @@ const handleSaveYoutubeLink = async () => {
                       </div>
                       <div className="as-queue-actions">
                         {/* FIX: show Add YouTube Link button only when no link exists */}
-                        {!item.link && (
+                        {!item.songLink && (
                           <button
                             className="as-add-link-btn"
                             onClick={() => {
@@ -373,12 +356,12 @@ const handleSaveYoutubeLink = async () => {
                       </div>
                     </div>
                     {/* FIX: only show yt-row when link exists, no dead button */}
-                    {item.link && (
+                    {item.songLink && (
                       <div className="as-yt-row">
                         <span className="as-yt-icon">▶</span>
-                        <span className="as-yt-url">{item.link.slice(0, 45)}...</span>
+                        <span className="as-yt-url">{item.songLink.slice(0, 45)}...</span>
                         <a
-                          href={item.link}
+                          href={item.songLink}
                           target="_blank"
                           rel="noreferrer"
                           className="as-yt-edit"
