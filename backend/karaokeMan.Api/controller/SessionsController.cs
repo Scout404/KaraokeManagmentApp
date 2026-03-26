@@ -176,15 +176,16 @@ namespace KaraokeMan.Api.Controllers
             .MaxAsync(q => (int?)q.Position) ?? 0;
 
         // Re-add singers who are not skipping
+        // Position resets to 1 for each new round
         var newItems = new List<QueueItem>();
+        var position = 1;
         foreach (var singer in singersInOrder.Where(s => !s.SkipNextRound))
         {
-            maxPosition++;
             newItems.Add(new QueueItem
             {
                 SessionId = sessionId,
                 SingerId = singer.SingerId,
-                Position = maxPosition,
+                Position = position++,
                 Status = "waiting",
                 Round = session.CurrentRound
             });
