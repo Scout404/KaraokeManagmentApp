@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using KaraokeMan.Api.Data;
 using KaraokeMan.Api.Models;
 
-namespace KaraokeMan.Api.Controllers
+namespace KaraokeMan.Api.Features.Sessions
 {
     [ApiController]
     [Route("api/[controller]")]

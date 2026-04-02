@@ -3,7 +3,7 @@ using KaraokeMan.Api.Data;
 using KaraokeMan.Api.Models;
 using KaraokeMan.Api.DTOs;
 
-namespace KaraokeMan.Api.Services
+namespace KaraokeMan.Api.Features.Queue
 {
     public interface IQueueService
     {

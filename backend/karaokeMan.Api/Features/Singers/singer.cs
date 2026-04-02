@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using KaraokeMan.Api.Features.Queue;
 
-namespace KaraokeMan.Api.Models
+namespace KaraokeMan.Api.Features.Singers
 {
     public class Singer
     {
