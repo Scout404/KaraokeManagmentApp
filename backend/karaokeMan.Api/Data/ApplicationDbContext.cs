@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using KaraokeMan.Api.Models;
+using KaraokeMan.Api.Data;
 
 namespace KaraokeMan.Api.Data
 {

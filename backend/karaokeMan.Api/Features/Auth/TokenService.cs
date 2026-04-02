@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using KaraokeMan.Api.Models;
 
-namespace KaraokeMan.Api.Services
+namespace KaraokeMan.Api.Features.Auth
 {
     public interface ITokenService
     {
