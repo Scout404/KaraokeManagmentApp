@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using KaraokeMan.Api.Features.Queue;
-using KaraokeMan.Api.Services;
 using KaraokeMan.Api.Hubs;
 using Microsoft.EntityFrameworkCore;
 
