@@ -1,3 +1,4 @@
+/* ── ROOT ── */
 .app-root {
   min-height: 100vh;
   display: flex;
@@ -12,30 +13,67 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 40px;
+  padding: 12px 16px;
   border-bottom: 1px solid #422348;
   background: #1f1022;
   position: sticky;
   top: 0;
   z-index: 50;
+  gap: 12px;
 }
 
 .app-header-left {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 12px;
+  min-width: 0;
 }
 
-.app-header-icon { font-size: 24px; color: #c813ec; }
+/* Hamburger — visible on mobile only */
+.app-menu-btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  padding: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.app-menu-btn span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background: #c092c9;
+  border-radius: 2px;
+  transition: background 0.2s;
+}
+
+.app-menu-btn:hover span {
+  background: #f1f0f2;
+}
+
+.app-header-icon {
+  font-size: 22px;
+  color: #c813ec;
+  flex-shrink: 0;
+}
 
 .app-brand {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 700;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* Search hidden on mobile */
 .app-search-wrap {
-  display: flex;
+  display: none;
   align-items: center;
   background: #422348;
   border-radius: 8px;
@@ -44,7 +82,10 @@
   gap: 8px;
 }
 
-.app-search-icon { font-size: 14px; opacity: 0.6; }
+.app-search-icon {
+  font-size: 14px;
+  opacity: 0.6;
+}
 
 .app-search {
   background: none;
@@ -52,18 +93,25 @@
   outline: none;
   color: #f1f0f2;
   font-size: 14px;
-  width: 220px;
+  width: 180px;
 }
 
-.app-search::placeholder { color: #c092c9; }
+.app-search::placeholder {
+  color: #c092c9;
+}
 
 .app-header-right {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 12px;
+  flex-shrink: 0;
 }
 
-.app-nav { display: flex; gap: 32px; }
+/* Nav hidden on mobile — lives in sidebar instead */
+.app-nav {
+  display: none;
+  gap: 32px;
+}
 
 .app-nav-link {
   font-size: 14px;
@@ -74,27 +122,46 @@
   transition: color 0.2s;
 }
 
-.app-nav-link:hover { color: #c813ec; }
+.app-nav-link:hover {
+  color: #c813ec;
+}
 
 .app-profile-btn {
   background: #c813ec;
   color: #fff;
   border: none;
   border-radius: 8px;
-  padding: 8px 18px;
-  font-size: 14px;
+  padding: 8px 14px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   transition: background 0.2s;
+  white-space: nowrap;
 }
 
-.app-profile-btn:hover { background: #a00ec0; }
+.app-profile-btn:hover {
+  background: #a00ec0;
+}
 
 /* ── BODY ── */
 .app-body {
   display: flex;
   flex: 1;
   min-height: 0;
+  position: relative;
+}
+
+/* ── SIDEBAR OVERLAY (mobile backdrop) ── */
+.app-sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 40;
+}
+
+.app-sidebar-overlay--visible {
+  display: block;
 }
 
 /* ── SIDEBAR ── */
@@ -102,15 +169,25 @@
   width: 256px;
   border-right: 1px solid #422348;
   background: #1f1022;
-  padding: 24px 16px;
+  padding: 20px 14px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
   flex-shrink: 0;
-  position: sticky;
-  top: 57px;
-  height: calc(100vh - 57px);
   overflow-y: auto;
+
+  /* Mobile: slide-in drawer */
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 45;
+  transform: translateX(-100%);
+  transition: transform 0.25s ease;
+}
+
+.app-sidebar--open {
+  transform: translateX(0);
 }
 
 .app-sidebar-section {
@@ -172,7 +249,7 @@
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  50%       { opacity: 0.4; }
 }
 
 .app-session-name {
@@ -192,4 +269,52 @@
   flex: 1;
   min-width: 0;
   overflow-y: auto;
+}
+
+/* ══════════════════════════════════════
+   TABLET  ≥ 600px
+══════════════════════════════════════ */
+@media (min-width: 600px) {
+  .app-header {
+    padding: 12px 24px;
+  }
+
+  .app-search-wrap {
+    display: flex;
+  }
+
+  .app-menu-btn {
+    display: flex; /* still needed until desktop */
+  }
+}
+
+/* ══════════════════════════════════════
+   DESKTOP  ≥ 900px
+══════════════════════════════════════ */
+@media (min-width: 900px) {
+  .app-header {
+    padding: 12px 24px;
+  }
+
+  .app-nav {
+    display: flex;
+  }
+
+  .app-menu-btn {
+    display: none; /* hamburger gone, sidebar always visible */
+  }
+
+  /* Sidebar: always visible, sticky */
+  .app-sidebar {
+    position: sticky;
+    top: 57px;
+    height: calc(100vh - 57px);
+    transform: none !important; /* override mobile slide state */
+    z-index: auto;
+  }
+
+  /* No overlay needed on desktop */
+  .app-sidebar-overlay {
+    display: none !important;
+  }
 }

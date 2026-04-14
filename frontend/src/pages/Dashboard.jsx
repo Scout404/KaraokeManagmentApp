@@ -70,7 +70,7 @@ function Dashboard() {
       <header className="ds-header">
         <div className="ds-header-left">
           <span className="ds-header-icon">🎤</span>
-          <span className="ds-brand">KaraokeDash</span>
+          <span className="ds-brand">Karaoke Manangement</span>
           <nav className="ds-nav">
             <a className="app-nav-link" onClick={() => navigate('/dashboard')}>Home</a>
             <a className="app-nav-link" onClick={() => navigate('/sessions')}>Sessions</a>

@@ -1,9 +1,10 @@
 .sp-page {
-  padding: 32px;
+  padding: 20px 16px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
   min-height: 100%;
+  box-sizing: border-box;
 }
 
 /* ── TOP BAR ── */
@@ -12,11 +13,11 @@
   align-items: flex-start;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 12px;
 }
 
 .sp-title {
-  font-size: 26px;
+  font-size: clamp(20px, 5vw, 26px);
   font-weight: 700;
   color: #fff;
   margin: 0 0 4px;
@@ -33,7 +34,7 @@
   color: #fff;
   border: none;
   border-radius: 10px;
-  padding: 10px 22px;
+  padding: 10px 20px;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
@@ -41,14 +42,22 @@
   white-space: nowrap;
 }
 
-.sp-new-btn:hover { background: #a00ec0; }
+.sp-new-btn:hover {
+  background: #a00ec0;
+}
 
 /* ── FILTER TABS ── */
 .sp-tabs {
   display: flex;
-  gap: 8px;
+  gap: 4px;
   border-bottom: 1px solid #422348;
-  padding-bottom: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sp-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .sp-tab {
@@ -58,76 +67,101 @@
   color: #c092c9;
   font-size: 14px;
   font-weight: 600;
-  padding: 8px 16px;
+  padding: 8px 14px;
   cursor: pointer;
   margin-bottom: -1px;
   transition: color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.sp-tab:hover { color: #f1f0f2; }
+.sp-tab:hover {
+  color: #f1f0f2;
+}
 
 .sp-tab--active {
   color: #c813ec;
   border-bottom-color: #c813ec;
 }
 
-/* ── TABLE ── */
+/* ══════════════════════════════════════
+   MOBILE: card layout (< 700px)
+══════════════════════════════════════ */
 .sp-table {
   display: flex;
   flex-direction: column;
+  gap: 10px;
+}
+
+/* Hide the desktop table head on mobile */
+.sp-table-head {
+  display: none;
+}
+
+/* Each row becomes a card */
+.sp-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #2f1933;
   border: 1px solid #422348;
   border-radius: 12px;
-  overflow: hidden;
-}
-
-.sp-table-head,
-.sp-row {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1.2fr 1fr 0.8fr 1fr 1.2fr;
-  gap: 12px;
-  padding: 14px 20px;
-  align-items: center;
-  font-size: 13px;
-}
-
-.sp-table-head {
-  background: #2f1933;
-  color: #c092c9;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  border-bottom: 1px solid #422348;
-}
-
-.sp-row {
-  background: #1f1022;
-  border-bottom: 1px solid #422348;
-  transition: background 0.15s;
+  padding: 16px;
+  font-size: 14px;
   color: #f1f0f2;
+  transition: background 0.15s;
 }
 
-.sp-row:last-child { border-bottom: none; }
+.sp-row--active {
+  cursor: pointer;
+}
 
-.sp-row--active { cursor: pointer; }
+.sp-row--active:hover {
+  background: #3a1f42;
+}
 
-.sp-row--active:hover { background: #2a1535; }
+/* Top of card: name + badge */
+.sp-row-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
 
 .sp-row-name {
   font-weight: 700;
   color: #fff;
+  font-size: 15px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+/* Secondary details */
+.sp-row-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  font-size: 13px;
+  color: #c092c9;
+}
+
+.sp-row-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sp-row-meta-label {
+  font-weight: 600;
+  color: #9a6ea3;
+}
+
 .sp-row-room,
 .sp-row-date,
-.sp-row-duration {
+.sp-row-duration,
+.sp-row-singers {
   color: #c092c9;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .sp-row-singers {
@@ -144,6 +178,7 @@
   border-radius: 999px;
   font-size: 11px;
   font-weight: 700;
+  flex-shrink: 0;
 }
 
 .sp-badge--live {
@@ -161,17 +196,21 @@
 /* ── ROW ACTIONS ── */
 .sp-row-actions {
   display: flex;
-  gap: 6px;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .sp-btn {
-  padding: 5px 12px;
+  padding: 7px 14px;
   border-radius: 6px;
   border: none;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
+  flex: 1;
+  min-width: 80px;
+  text-align: center;
 }
 
 .sp-btn--open {
@@ -179,7 +218,9 @@
   color: #fff;
 }
 
-.sp-btn--open:hover { background: #a00ec0; }
+.sp-btn--open:hover {
+  background: #a00ec0;
+}
 
 .sp-btn--end {
   background: #2f1933;
@@ -198,7 +239,9 @@
   border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
-.sp-btn--delete:hover { background: rgba(239, 68, 68, 0.2); }
+.sp-btn--delete:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
 
 /* ── UTILS ── */
 .sp-error {
@@ -213,4 +256,82 @@
 .sp-muted {
   color: #c092c9;
   font-size: 14px;
+}
+
+/* ══════════════════════════════════════
+   DESKTOP TABLE  ≥ 700px
+══════════════════════════════════════ */
+@media (min-width: 700px) {
+  .sp-page {
+    padding: 32px 28px;
+    gap: 24px;
+  }
+
+  /* Switch back to table layout */
+  .sp-table {
+    gap: 0;
+    border: 1px solid #422348;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .sp-table-head {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.2fr 1fr 0.8fr 1fr 1.2fr;
+    gap: 12px;
+    padding: 14px 20px;
+    background: #2f1933;
+    color: #c092c9;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid #422348;
+    align-items: center;
+  }
+
+  .sp-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.2fr 1fr 0.8fr 1fr 1.2fr;
+    gap: 12px;
+    padding: 14px 20px;
+    background: #1f1022;
+    border: none;
+    border-bottom: 1px solid #422348;
+    border-radius: 0;
+    flex-direction: unset;
+    align-items: center;
+    font-size: 13px;
+  }
+
+  .sp-row:last-child {
+    border-bottom: none;
+  }
+
+  /* Hide mobile-only wrappers */
+  .sp-row-card-top,
+  .sp-row-meta {
+    display: contents; /* lets children participate in the grid */
+  }
+
+  .sp-row-name {
+    font-size: 13px;
+  }
+
+  .sp-row-actions {
+    flex-wrap: nowrap;
+  }
+
+  .sp-btn {
+    flex: unset;
+    min-width: unset;
+    padding: 5px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .sp-page {
+    padding: 32px;
+  }
 }
