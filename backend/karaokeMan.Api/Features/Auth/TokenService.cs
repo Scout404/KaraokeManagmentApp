@@ -2,9 +2,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using KaraokeMan.Api.Models;
+using KaraokeMan.Api.Data;
 
-namespace KaraokeMan.Api.Services
+namespace KaraokeMan.Api.Features.Auth
 {
     public interface ITokenService
     {

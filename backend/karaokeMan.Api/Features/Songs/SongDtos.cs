@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace KaraokeMan.Api.DTOs
+namespace KaraokeMan.Api.Features.Songs
 {
     public class SongDto
     {

@@ -1,7 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using KaraokeMan.Api.Features.Sessions;
+using KaraokeMan.Api.Features.Singers;
+using KaraokeMan.Api.Features.Songs;
 
-namespace KaraokeMan.Api.Models
+namespace KaraokeMan.Api.Features.Queue
 {
     public class QueueItem
     {

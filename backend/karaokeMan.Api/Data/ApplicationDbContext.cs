@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using KaraokeMan.Api.Models;
+using KaraokeMan.Api.Features.Singers;
+using KaraokeMan.Api.Features.Queue;
+using KaraokeMan.Api.Features.Sessions;
+using KaraokeMan.Api.Features.Songs;
 
 namespace KaraokeMan.Api.Data
 {

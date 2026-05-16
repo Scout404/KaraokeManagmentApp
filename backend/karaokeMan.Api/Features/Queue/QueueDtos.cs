@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace KaraokeMan.Api.DTOs
+namespace KaraokeMan.Api.Features.Queue
 {
     public class AddToQueueDto
     {
         [Required]
-        public string SingerId { get; set; } 
+        public string? SingerId { get; set; } 
         
         public int? SongId { get; set; }
         

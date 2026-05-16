@@ -4,7 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using KaraokeMan.Api.Data;
-using KaraokeMan.Api.Services;
+using KaraokeMan.Api.Features.Auth;
+using KaraokeMan.Api.Features.Queue;
 using KaraokeMan.Api.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);

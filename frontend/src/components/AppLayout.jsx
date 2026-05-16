@@ -9,18 +9,16 @@ function AppLayout({ user, onLogout, activeSessions = [], currentSessionId = nul
       {/* HEADER */}
       <header className="app-header">
         <div className="app-header-left">
-          <span className="app-header-icon">🎤</span>
           <span className="app-brand">Karaoke Manager</span>
-          <label className="app-search-wrap">
-            <span className="app-search-icon">🔍</span>
-            <input className="app-search" placeholder="Search songs or singers..." />
-          </label>
+          {/* <label className="app-search-wrap">
+            <input className="app-search" placeholder="Search sessions..." />
+          </label> */}
         </div>
         <div className="app-header-right">
           <nav className="app-nav">
-            <a className="app-nav-link" onClick={() => navigate('/dashboard')}>Dashboard</a>
+            <a className="app-nav-link" onClick={() => navigate('/dashboard')}>Home</a>
             <a className="app-nav-link" onClick={() => navigate('/sessions')}>Sessions</a>
-            <a className="app-nav-link" href="#">Library</a>
+            {/* <a className="app-nav-link" href="#">Library</a> */}
           </nav>
           <button className="app-profile-btn" onClick={onLogout}>
             Logout
@@ -37,7 +35,7 @@ function AppLayout({ user, onLogout, activeSessions = [], currentSessionId = nul
               className={`app-sidebar-item ${!currentSessionId ? 'app-sidebar-item--active' : ''}`}
               onClick={() => navigate('/dashboard')}
             >
-              <span>🏠</span> Dashboard
+              <span>🏠</span> Home
             </button>
             <button
               className="app-sidebar-item"
@@ -53,9 +51,9 @@ function AppLayout({ user, onLogout, activeSessions = [], currentSessionId = nul
                 <span>👥</span> Manage Singers
               </button>
             )}
-            <button className="app-sidebar-item">
+            {/* <button className="app-sidebar-item">
               <span>🎵</span> Song Library
-            </button>
+            </button> */}
           </div>
 
           {/* ACTIVE SESSIONS IN SIDEBAR */}

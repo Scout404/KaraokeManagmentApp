@@ -2,12 +2,11 @@ using KaraokeMan.Api.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using KaraokeMan.Api.DTOs;
-using KaraokeMan.Api.Services;
+using KaraokeMan.Api.Features.Queue;
 using KaraokeMan.Api.Hubs;
 using Microsoft.EntityFrameworkCore;
 
-namespace KaraokeMan.Api.Controllers
+namespace KaraokeMan.Api.Features.Queue
 {
     [ApiController]
     [Route("api/[controller]")]

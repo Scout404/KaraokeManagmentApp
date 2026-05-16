@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace KaraokeMan.Api.Models
+namespace KaraokeMan.Api.Data
 {
     public class User
     {

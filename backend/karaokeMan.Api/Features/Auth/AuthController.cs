@@ -2,11 +2,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using KaraokeMan.Api.Data;
-using KaraokeMan.Api.DTOs;
-using KaraokeMan.Api.Models;
-using KaraokeMan.Api.Services;
+using KaraokeMan.Api.Features.Auth;
 
-namespace KaraokeMan.Api.Controllers
+namespace KaraokeMan.Api.Features.Auth
 {
     [ApiController]
     [Route("api/[controller]")]

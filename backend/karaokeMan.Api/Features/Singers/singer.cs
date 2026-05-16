@@ -1,21 +1,16 @@
 using System.ComponentModel.DataAnnotations;
+using KaraokeMan.Api.Features.Queue;
 
-namespace KaraokeMan.Api.Models
+namespace KaraokeMan.Api.Features.Singers
 {
-    public class Song
+    public class Singer
     {
         [Key]
         public int Id { get; set; }
         
         [Required]
-        [MaxLength(300)]
-        public string Title { get; set; } = string.Empty;
-        
         [MaxLength(200)]
-        public string? Artist { get; set; }
-        
-        [MaxLength(500)]
-        public string? Link { get; set; }
+        public string Name { get; set; } = string.Empty;
         
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         
