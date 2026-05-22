@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5096/api';
+const API_BASE_URL = 'https://karaokemanagmentapp.onrender.com';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || API_BASE_URL, 
